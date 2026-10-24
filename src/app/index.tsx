@@ -2,12 +2,12 @@ import * as Device from 'expo-device';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { AnimatedIcon } from '@/components/ui/animated-icon';
+import { HintRow } from '@/components/ui/hint-row';
+import { ThemedText } from '@/components/ui/themed-text';
+import { ThemedView } from '@/components/ui/themed-view';
+import { WebBadge } from '@/components/ui/web-badge';
+import { BottomTabInset, MaxContentWidth, Spacing } from '@/lib/theme';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {

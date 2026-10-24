@@ -1,9 +1,11 @@
+import '@/components/ui/global.css';
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import AppTabs from '@/components/navigation/app-tabs';
+import { AnimatedSplashOverlay } from '@/components/ui/animated-splash-overlay';
 
 SplashScreen.preventAutoHideAsync();
 
