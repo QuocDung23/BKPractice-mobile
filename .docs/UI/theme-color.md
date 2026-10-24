@@ -1,112 +1,112 @@
 Mobile
 
-### 3.1. Palette nền tảng dùng chung
+### 3.1. Shared base palette
 
-Hầu hết các màn hình mobile dùng bộ màu dưới đây.
-Mục 3.2 chỉ liệt kê màu đặc trưng hoặc bổ sung của từng màn hình.
+Most mobile screens use the colors below.
+Section 3.2 lists only the distinctive or additional colors for each screen.
 
-| Vai trò | Mã màu |
+| Role | Color code |
 | --- | --- |
-| Màu chính / nút | #3D8D7A |
-| Nền trang | #F7FBF9 |
-| Nền thẻ / bề mặt | #FFFFFF |
-| Chữ chính | #263D36 |
-| Chữ phụ | #71847D |
-| Chữ mờ | #9AAAA4 |
-| Viền / nền thành phần | #E7F1ED, #EDF4F1, #F1F7F5 |
-| Xanh đậm / vùng mã | #1F3B33 |
-| Thành công | #168B5B trên #E4F5EC |
-| Cảnh báo | #B87519 trên #FEF0DC |
-| Lỗi / quá hạn | #D14E4E hoặc #F26B6B trên #FDECEC |
+| Primary color / buttons | #3D8D7A |
+| Page background | #F7FBF9 |
+| Card / surface background | #FFFFFF |
+| Primary text | #263D36 |
+| Secondary text | #71847D |
+| Muted text | #9AAAA4 |
+| Borders / component backgrounds | #E7F1ED, #EDF4F1, #F1F7F5 |
+| Dark green / code areas | #1F3B33 |
+| Success | #168B5B on #E4F5EC |
+| Warning | #B87519 on #FEF0DC |
+| Error / overdue | #D14E4E or #F26B6B on #FDECEC |
 
-### 3.2. Palette theo màn hình
+### 3.2. Screen-specific palettes
 
-#### Khởi động và hướng dẫn ban đầu
+#### Splash and onboarding
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Splash | Mint #A3D1C6, #B8DBD1; xanh chữ #2F7365, #2F6459 |
-| Onboarding — Learn | Nền #EAF6F2, #F2FAF7; trang trí #CFE3DC |
-| Onboarding — Practice | Xanh trời #CDEEFF / #2F6A8C |
-| Onboarding — Grow | Vàng kem #FBFFE4 / #8A8F4E |
+| Splash | Mint #A3D1C6, #B8DBD1; text green #2F7365, #2F6459 |
+| Onboarding — Learn | Backgrounds #EAF6F2, #F2FAF7; decoration #CFE3DC |
+| Onboarding — Practice | Sky blue #CDEEFF / #2F6A8C |
+| Onboarding — Grow | Cream yellow #FBFFE4 / #8A8F4E |
 
-#### Tài khoản và xác thực
+#### Account and authentication
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Đăng nhập | #EAF6F2, #DCEFE9, #7FBFAE; viền #E2EDE9 |
-| Tạo tài khoản | Hợp lệ #168B5B; lỗi nhập #F26B6B, nền lỗi #FFF7F7 |
-| Xác thực email / OTP | #EAF6F2, #F6FAF8; nút #3D8D7A |
-| Xác thực thành công | #168B5B trên #E4F5EC |
+| Sign in | #EAF6F2, #DCEFE9, #7FBFAE; border #E2EDE9 |
+| Create account | Valid #168B5B; input error #F26B6B, error background #FFF7F7 |
+| Email / OTP verification | #EAF6F2, #F6FAF8; button #3D8D7A |
+| Verification success | #168B5B on #E4F5EC |
 
-#### Trang chủ và khóa học
+#### Home and courses
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Trang chủ | Mint #A3D1C6, #B4DBD1; xanh trời #CDEEFF; hồng #FFD6DF |
-| Danh sách khóa học | #DCEFE9, #CDEEFF, #FBFFE4, #FFD6DF |
-| Chi tiết khóa học | #EAF6F2; tiến độ #3D8D7A; hoàn thành #168B5B / #E4F5EC |
-| Bài học | Khối mã #1F3B33; mẹo học #FBFFE4 / #8A8F4E; nền minh họa #FDFFF2 |
+| Home | Mint #A3D1C6, #B4DBD1; sky blue #CDEEFF; pink #FFD6DF |
+| Course list | #DCEFE9, #CDEEFF, #FBFFE4, #FFD6DF |
+| Course details | #EAF6F2; progress #3D8D7A; completion #168B5B / #E4F5EC |
+| Lesson | Code block #1F3B33; learning tip #FBFFE4 / #8A8F4E; illustration background #FDFFF2 |
 
-#### Luyện tập và kết quả nộp bài
+#### Practice and submission results
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Danh sách bài tập | Dễ #168B5B / #E4F5EC; vừa #B87519 / #FEF0DC; khó #D14E4E / #FDECEC |
-| Chi tiết bài tập | Trạng thái #168B5B, #B87519; khối thông tin #CDEEFF / #2F6A8C |
-| Kết quả nộp bài | Thành công #168B5B / #E4F5EC; khối mã #1F3B33, chữ #D8EFE7 |
+| Exercise list | Easy #168B5B / #E4F5EC; medium #B87519 / #FEF0DC; hard #D14E4E / #FDECEC |
+| Exercise details | Status #168B5B, #B87519; information panel #CDEEFF / #2F6A8C |
+| Submission results | Success #168B5B / #E4F5EC; code block #1F3B33, text #D8EFE7 |
 
 #### Quiz
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Danh sách quiz | #DCEFE9, #CDEEFF, #FBFFE4; XP #F3A83B |
-| Câu hỏi quiz | Đồng hồ #B87519 / #FEF0DC; mã #1F3B33 |
-| Câu hỏi quiz — chọn đáp án | Đáp án chọn #DCEFE9, #3D8D7A |
-| Kết quả quiz | Banner #A3D1C6; đúng #168B5B, sai #F26B6B, XP #F3A83B |
+| Quiz list | #DCEFE9, #CDEEFF, #FBFFE4; XP #F3A83B |
+| Quiz question | Timer #B87519 / #FEF0DC; code #1F3B33 |
+| Quiz question — selected answer | Selected answer #DCEFE9, #3D8D7A |
+| Quiz results | Banner #A3D1C6; correct #168B5B, incorrect #F26B6B, XP #F3A83B |
 
-#### Bài được giao
+#### Assignments
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Danh sách bài được giao | Sắp hạn #FEF0DC; quá hạn #FDECEC / #D14E4E; hoàn thành #E4F5EC / #168B5B |
-| Chi tiết bài được giao | #FEF0DC, #B87519; tiến độ #3D8D7A; trạng thái #168B5B, #D14E4E |
+| Assignment list | Due soon #FEF0DC; overdue #FDECEC / #D14E4E; completed #E4F5EC / #168B5B |
+| Assignment details | #FEF0DC, #B87519; progress #3D8D7A; status #168B5B, #D14E4E |
 
-#### Xếp hạng, hồ sơ và cài đặt
+#### Rankings, profile, and settings
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Bảng xếp hạng | Mint #A3D1C6; bục hạng #CDEEFF, #FBFFE4, #FFD6DF |
-| Hồ sơ cá nhân | #FFD6DF, #DCEFE9, #FBFFE4; huy hiệu #F3A83B, điểm nhấn #F26B6B |
-| Thành tích | Hồng #FFD6DF / #C4576F; xanh #E4F5EC; cam nhạt #FEF0DC; huy hiệu khóa #EFF5F3 |
-| Thông báo | Chưa đọc #DCEFE9; phân loại #FDECEC, #E4F5EC, #FFD6DF, #CDEEFF |
-| Cài đặt | Công tắc #3D8D7A; đăng xuất #F26B6B, nền #FFF7F7, viền #FADADA |
+| Leaderboard | Mint #A3D1C6; podium #CDEEFF, #FBFFE4, #FFD6DF |
+| Profile | #FFD6DF, #DCEFE9, #FBFFE4; badges #F3A83B, accent #F26B6B |
+| Achievements | Pink #FFD6DF / #C4576F; green #E4F5EC; light orange #FEF0DC; locked badge #EFF5F3 |
+| Notifications | Unread #DCEFE9; categories #FDECEC, #E4F5EC, #FFD6DF, #CDEEFF |
+| Settings | Toggle #3D8D7A; sign out #F26B6B, background #FFF7F7, border #FADADA |
 
-#### Trạng thái đặc biệt
+#### Special states
 
-| Màn hình | Màu bổ sung nổi bật |
+| Screen | Notable additional colors |
 | --- | --- |
-| Chưa có dữ liệu | #FFFFFF, #F7FBF9, #3D8D7A, #71847D |
-| Ngoại tuyến | Cảnh báo #FEF0DC, #B87519, #8A6224 |
-| Lỗi tải kết quả | #FDECEC, #F26B6B; nút thử lại #3D8D7A |
+| Empty state | #FFFFFF, #F7FBF9, #3D8D7A, #71847D |
+| Offline | Warning #FEF0DC, #B87519, #8A6224 |
+| Results loading error | #FDECEC, #F26B6B; retry button #3D8D7A |
 
 ---
 
-## 4. So sánh Website và Mobile
+## 4. Website and mobile comparison
 
-| Khía cạnh | Website | Mobile |
+| Aspect | Website | Mobile |
 | --- | --- | --- |
-| Màu chính | Nhiều nhóm song song: #21B386, #22C55E, #004482 | Chủ yếu #3D8D7A |
-| Chữ chính | Thường #111827, #111C2D | #263D36 |
-| Nền | Trắng, xanh rất nhạt và xanh tím nhạt tùy nhóm chức năng | Trắng và mint nhạt tương đối nhất quán |
-| Màu phụ | Xanh lá, xanh dương, vàng/cam theo trạng thái và dữ liệu | Mint, hồng pastel, xanh trời và vàng kem |
-| Phiên bản | Có nhiều phiên bản cùng chức năng, chưa đồng nhất hoàn toàn | Palette nền tảng nhất quán hơn |
+| Primary colors | Several parallel color groups: #21B386, #22C55E, #004482 | Primarily #3D8D7A |
+| Primary text | Usually #111827, #111C2D | #263D36 |
+| Backgrounds | White, very pale green, and pale blue-purple, depending on the feature area | Relatively consistent white and pale mint |
+| Secondary colors | Green, blue, and yellow/orange for states and data | Mint, pastel pink, sky blue, and cream yellow |
+| Variants | Multiple versions of the same functionality are not yet fully consistent | A more consistent base palette |
 
-### Lưu ý khi sử dụng
+### Usage notes
 
-- Không tự động coi các màu gần giống nhau là cùng một màu.
-  Ví dụ: #21B386, #20B486 và #22B286 đang là các giá trị khác nhau.
-- Khi triển khai, cần xác định phiên bản giao diện được chọn trước khi lấy màu.
-- Vai trò màu trong tài liệu mô tả cách sử dụng quan sát được,
-  không khẳng định chúng đã được liên kết với variable hoặc style trong Figma.
-- Tài liệu này là bản thống kê, không thay đổi thiết kế hiện có.
+- Do not automatically treat similar colors as identical.
+  For example, #21B386, #20B486, and #22B286 are distinct values.
+- Before implementing a screen, identify which design variant to use.
+- The color roles in this document describe observed usage; they do not establish
+  that these colors are linked to variables or styles in Figma.
+- This document is an inventory and does not change the existing design.
