@@ -1,5 +1,29 @@
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
+## Working workflow
+
+The workflow adapted from BKPractice frontend lives in [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md). Read it before doing work in this repository.
+
+| Purpose | Document |
+| --- | --- |
+| Work steps, coding gate, and coding rules | [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md) |
+| Source layers and Expo Router boundaries | [.docs/pm/architecture/README.md](.docs/pm/architecture/README.md) |
+| Architecture decisions in force | [.docs/adr/](.docs/adr/) — `Accepted` records only |
+| Feature requirements | `.docs/pm/specs/<feature>/spec.md` |
+| Feature implementation plan | `.docs/pm/specs/<feature>/plan.md` |
+| Optional implementation checklist | `.docs/pm/specs/<feature>/tasks.md` |
+| Work note format | [.docs/worker/README.md](.docs/worker/README.md) |
+| Documentation index | [.docs/README.md](.docs/README.md) |
+
+1. Read the architecture, applicable Accepted ADRs, spec, and plan. Edit `src/` only when the feature spec is `Approved` and its plan exists. Ask when the documents disagree or requirements are unsettled.
+2. Keep code in its owning layer and implement the approved scope.
+3. Run `npx tsc --noEmit` and `npm run lint`.
+4. Record source changes in `.docs/worker/<feature>/YYYY-MM-DD-<task>.md`; use `shared/` for infrastructure work.
+
+Questions and documentation-only tasks stop at step 1. Source changes follow all four steps. Keep the Expo rules below when following the workflow.
+
+This base uses npm and `package-lock.json`. Do not introduce a second lockfile. Frontend libraries are conventions for features that need them, not dependencies to install preemptively.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
