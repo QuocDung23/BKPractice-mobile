@@ -15,3 +15,4 @@ directory. The steps they apply live in [`agent/working-agreement.md`](./agent/w
 and the source coding rules live in [`agent/rules.md`](./agent/rules.md).
 
 After a change to `src/`, the work note for that change lives in [`worker/`](./worker/).
+Code review findings and follow-up notes live in [`review-code/`](./review-code/).
