@@ -2,11 +2,12 @@ This is an Expo/React Native mobile application. Prioritize mobile-first pattern
 
 ## Working workflow
 
-The workflow adapted from BKPractice frontend lives in [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md). Read it before doing work in this repository.
+The workflow adapted from BKPractice frontend lives in [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md). Read it before doing work in this repository. Read [.docs/agent/rules.md](.docs/agent/rules.md) before changing source code.
 
 | Purpose | Document |
 | --- | --- |
-| Work steps, coding gate, and coding rules | [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md) |
+| Work steps and coding gate | [.docs/agent/working-agreement.md](.docs/agent/working-agreement.md) |
+| Agent coding rules | [.docs/agent/rules.md](.docs/agent/rules.md) |
 | Source layers and Expo Router boundaries | [.docs/pm/architecture/README.md](.docs/pm/architecture/README.md) |
 | Architecture decisions in force | [.docs/adr/](.docs/adr/) — `Accepted` records only |
 | Feature requirements | `.docs/pm/specs/<feature>/spec.md` |
@@ -49,7 +50,7 @@ Run lint and typecheck before declaring any task done.
 
 ## Navigation & Routing
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
+- Use **Expo Router** for all navigation. Route files in `src/app/` only connect a URL to a module's root component and pass route parameters when needed; `_layout.tsx` files define navigators. Put screen UI and styles in `src/components/<module>/`, shared UI in `src/components/ui/`, and other non-route code outside `src/app/`. Do not create a `screens/` directory.
 - Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
 - Docs: https://docs.expo.dev/router/introduction.md
 

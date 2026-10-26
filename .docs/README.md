@@ -11,6 +11,8 @@ The Clean Architecture folder map, including the role of `app`, `components`, `d
 `stores`, `hooks`, and `lib`, lives in [`pm/architecture/`](./pm/architecture/).
 
 [`AGENTS.md`](../AGENTS.md) summarizes the workflow and points agents at the documents in this
-directory. The steps they apply live in [`agent/working-agreement.md`](./agent/working-agreement.md).
+directory. The steps they apply live in [`agent/working-agreement.md`](./agent/working-agreement.md),
+and the source coding rules live in [`agent/rules.md`](./agent/rules.md).
 
 After a change to `src/`, the work note for that change lives in [`worker/`](./worker/).
+Code review findings and follow-up notes live in [`review-code/`](./review-code/).

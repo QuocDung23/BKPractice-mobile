@@ -23,7 +23,7 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-Screens and routes live in `src/app/`; extracted UI components live in `src/components/`. This project uses [file-based routing](https://docs.expo.dev/router/introduction). See [the architecture map](./.docs/pm/architecture/README.md) for the other source folders.
+Route files and navigator layouts live in `src/app/`; each route renders a root UI component from `src/components/<module>/`. Screen UI and styles stay with that module. This project uses [file-based routing](https://docs.expo.dev/router/introduction). See [the architecture map](./.docs/pm/architecture/README.md) for the other source folders.
 
 ## Get a fresh project
 
