@@ -1,72 +1,84 @@
-import { SymbolView } from 'expo-symbols';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
+import { useState, type ReactElement } from "react";
+import { Pressable, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { MascotPlaceholder } from '@/components/ui';
-import { BrandColors, BrandFonts } from '@/lib/theme';
+import { MascotPlaceholder } from "@/components/ui";
+import { Brands } from "@/lib/themes";
 
 const slides = [
   {
-    title: 'Learn step by step.',
-    description: 'Follow the course path your lecturer assigns. Short lessons, worked examples, then practice — in that order.',
-    artTitle: 'BYTEY · LEARN',
-    artDescription: 'Bytey reading a book with lesson cards',
-    background: BrandColors.learn,
-    decoration: '{ }',
-    decorationColor: BrandColors.primary,
-    endDecoration: '✦',
+    title: "Learn step by step.",
+    description:
+      "Follow the course path your lecturer assigns. Short lessons, worked examples, then practice — in that order.",
+    artTitle: "BYTEY · LEARN",
+    artDescription: "Bytey reading a book with lesson cards",
+    background: Brands.colors.learn,
+    decoration: "{ }",
+    decorationColor: Brands.colors.primary,
+    endDecoration: "✦",
   },
   {
-    title: 'Practice with confidence.',
-    description: 'Read problems and check your results on mobile. Tap Open on Web to write, run, and submit code in the full editor.',
-    artTitle: 'CODE CHALLENGE',
-    artDescription: 'Bytey at a terminal, tests passing',
-    background: BrandColors.practice,
-    decoration: '</>',
-    decorationColor: '#2F6A8C',
-    endDecoration: '$ run',
+    title: "Practice with confidence.",
+    description:
+      "Read problems and check your results on mobile. Tap Open on Web to write, run, and submit code in the full editor.",
+    artTitle: "CODE CHALLENGE",
+    artDescription: "Bytey at a terminal, tests passing",
+    background: Brands.colors.practice,
+    decoration: "</>",
+    decorationColor: Brands.colors.homeBlueText,
+    endDecoration: "$ run",
   },
   {
-    title: 'Watch your skills grow.',
-    description: 'Streaks, badges, and a weekly progress ring so you always know where you stand in the class.',
-    artTitle: 'BYTEY · GROW',
-    artDescription: 'Trophy, rising chart, badge shelf',
-    background: BrandColors.grow,
-    decoration: '✦',
-    decorationColor: '#8A8F4E',
-    endDecoration: '♥',
+    title: "Watch your skills grow.",
+    description:
+      "Streaks, badges, and a weekly progress ring so you always know where you stand in the class.",
+    artTitle: "BYTEY · GROW",
+    artDescription: "Trophy, rising chart, badge shelf",
+    background: Brands.colors.grow,
+    decoration: "✦",
+    decorationColor: Brands.colors.growText,
+    endDecoration: "♥",
   },
 ] as const;
 
-export function OnboardingView() {
+export function OnboardingView(): ReactElement {
   const [step, setStep] = useState(0);
   const slide = slides[step];
   const isLastStep = step === slides.length - 1;
 
   function goForward(): void {
-    if (isLastStep) router.replace('/sign-in');
+    if (isLastStep) router.replace("/sign-in");
     else setStep(step + 1);
   }
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
-        <View style={styles.topRow}>
+    <SafeAreaView className="flex-1 bg-surface">
+      <View className="flex-1 px-5 pb-5">
+        <View className="h-11 items-end justify-center">
           {!isLastStep && (
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Skip onboarding"
-              onPress={() => router.replace('/sign-in')}
-              style={({ pressed }) => [styles.skipButton, pressed && styles.pressed]}>
-              <Text style={styles.skipText}>Skip</Text>
+              onPress={() => router.replace("/sign-in")}
+              className="min-w-14 min-h-11 items-end justify-center active:opacity-[0.84] active:scale-[0.98]"
+            >
+              <Text className="text-textSecondary font-brand-medium text-[15px]">
+                Skip
+              </Text>
             </Pressable>
           )}
         </View>
 
-        <View style={[styles.artPanel, { backgroundColor: slide.background }]}>
-          <Text style={[styles.artDecoration, styles.artDecorationTop, { color: slide.decorationColor }]}>
+        <View
+          className="flex-1 min-h-[245px] max-h-[490px] items-center justify-center rounded-[42px] overflow-hidden"
+          style={{ backgroundColor: slide.background }}
+        >
+          <Text
+            className="absolute opacity-[0.32] font-brand-mono text-[18px] left-[25px] top-5"
+            style={{ color: slide.decorationColor }}
+          >
             {slide.decoration}
           </Text>
           <MascotPlaceholder
@@ -75,17 +87,25 @@ export function OnboardingView() {
             width={200}
             height={200}
           />
-          <Text style={[styles.artDecoration, styles.artDecorationBottom, { color: slide.decorationColor }]}>
+          <Text
+            className="absolute opacity-[0.32] font-brand-mono text-[15px] right-[25px] bottom-[18px]"
+            style={{ color: slide.decorationColor }}
+          >
             {slide.endDecoration}
           </Text>
         </View>
 
-        <Text style={styles.title}>{slide.title}</Text>
-        <Text style={styles.description}>
+        <Text className="mt-[29px] text-text font-brand-regular text-[27px] leading-[34px] tracking-[-1px]">
+          {slide.title}
+        </Text>
+        <Text className="min-h-[74px] mt-[11px] text-textSecondary font-brand-light text-[15px] leading-[21px]">
           {step === 1 ? (
             <>
-              Read problems and check your results on mobile. Tap{' '}
-              <Text style={styles.descriptionHighlight}>Open on Web</Text> to write, run, and submit code in the full editor.
+              Read problems and check your results on mobile. Tap{" "}
+              <Text className="text-primary font-brand-medium">
+                Open on Web
+              </Text>{" "}
+              to write, run, and submit code in the full editor.
             </>
           ) : (
             slide.description
@@ -93,33 +113,81 @@ export function OnboardingView() {
         </Text>
 
         {isLastStep ? (
-          <View style={styles.lastActions}>
+          <View className="mt-[17px] items-center gap-[14px]">
             <Pressable
               accessibilityRole="button"
               onPress={goForward}
-              style={({ pressed }) => [styles.primaryButton, styles.fullButton, pressed && styles.pressed]}>
-              <Text style={styles.buttonText}>Get Started</Text>
-              <SymbolView name={{ ios: 'arrow.right', android: 'arrow_forward', web: 'arrow_forward' }} size={19} tintColor={BrandColors.surface} />
+              className="h-[52px] rounded-[28px] flex-row items-center justify-center gap-[9px] bg-primary self-stretch active:opacity-[0.84] active:scale-[0.98]"
+              style={{
+                shadowColor: Brands.colors.primary,
+                shadowOpacity: 0.24,
+                shadowOffset: { width: 0, height: 10 },
+                shadowRadius: 14,
+                elevation: 4,
+              }}
+            >
+              <Text className="text-surface font-brand-regular text-[16px]">
+                Get Started
+              </Text>
+              <SymbolView
+                name={{
+                  ios: "arrow.right",
+                  android: "arrow_forward",
+                  web: "arrow_forward",
+                }}
+                size={19}
+                tintColor={Brands.colors.surface}
+              />
             </Pressable>
-            <View style={styles.progress} accessibilityLabel="Onboarding step 3 of 3">
+            <View
+              className="flex-row items-center gap-[7px]"
+              accessibilityLabel="Onboarding step 3 of 3"
+            >
               {slides.map((item, index) => (
-                <View key={item.title} style={[styles.progressDot, index === step && styles.progressActive]} />
+                <View
+                  key={item.title}
+                  className={`h-[7px] rounded-[4px] ${index === step ? "w-[21px] bg-primary" : "w-[7px] bg-progressInactive"}`}
+                />
               ))}
             </View>
           </View>
         ) : (
-          <View style={styles.actions}>
-            <View style={styles.progress} accessibilityLabel={`Onboarding step ${step + 1} of 3`}>
+          <View className="mt-[17px] flex-row items-center justify-between">
+            <View
+              className="flex-row items-center gap-[7px]"
+              accessibilityLabel={`Onboarding step ${step + 1} of 3`}
+            >
               {slides.map((item, index) => (
-                <View key={item.title} style={[styles.progressDot, index === step && styles.progressActive]} />
+                <View
+                  key={item.title}
+                  className={`h-[7px] rounded-[4px] ${index === step ? "w-[21px] bg-primary" : "w-[7px] bg-progressInactive"}`}
+                />
               ))}
             </View>
             <Pressable
               accessibilityRole="button"
               onPress={goForward}
-              style={({ pressed }) => [styles.primaryButton, styles.continueButton, pressed && styles.pressed]}>
-              <Text style={styles.buttonText}>Continue</Text>
-              <SymbolView name={{ ios: 'arrow.right', android: 'arrow_forward', web: 'arrow_forward' }} size={19} tintColor={BrandColors.surface} />
+              className="h-[52px] rounded-[28px] flex-row items-center justify-center gap-[9px] bg-primary min-w-[248px] active:opacity-[0.84] active:scale-[0.98]"
+              style={{
+                shadowColor: Brands.colors.primary,
+                shadowOpacity: 0.24,
+                shadowOffset: { width: 0, height: 10 },
+                shadowRadius: 14,
+                elevation: 4,
+              }}
+            >
+              <Text className="text-surface font-brand-regular text-[16px]">
+                Continue
+              </Text>
+              <SymbolView
+                name={{
+                  ios: "arrow.right",
+                  android: "arrow_forward",
+                  web: "arrow_forward",
+                }}
+                size={19}
+                tintColor={Brands.colors.surface}
+              />
             </Pressable>
           </View>
         )}
@@ -127,73 +195,3 @@ export function OnboardingView() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: BrandColors.surface },
-  content: { flex: 1, paddingHorizontal: 20, paddingBottom: 20 },
-  topRow: { height: 44, alignItems: 'flex-end', justifyContent: 'center' },
-  skipButton: { minWidth: 56, minHeight: 44, alignItems: 'flex-end', justifyContent: 'center' },
-  skipText: { color: BrandColors.textSecondary, fontFamily: BrandFonts.medium, fontSize: 15 },
-  artPanel: {
-    flex: 1,
-    minHeight: 245,
-    maxHeight: 490,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 42,
-    overflow: 'hidden',
-  },
-  artDecoration: {
-    position: 'absolute',
-    opacity: 0.32,
-    fontFamily: BrandFonts.mono,
-    fontSize: 18,
-  },
-  artDecorationTop: { left: 25, top: 20 },
-  artDecorationBottom: { right: 25, bottom: 18, fontSize: 15 },
-  title: {
-    marginTop: 29,
-    color: BrandColors.text,
-    fontFamily: BrandFonts.regular,
-    fontSize: 27,
-    lineHeight: 34,
-    letterSpacing: -1,
-  },
-  description: {
-    minHeight: 74,
-    marginTop: 11,
-    color: BrandColors.textSecondary,
-    fontFamily: BrandFonts.light,
-    fontSize: 15,
-    lineHeight: 21,
-  },
-  descriptionHighlight: { color: BrandColors.primary, fontFamily: BrandFonts.medium },
-  actions: {
-    marginTop: 17,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  lastActions: { marginTop: 17, alignItems: 'center', gap: 14 },
-  progress: { flexDirection: 'row', alignItems: 'center', gap: 7 },
-  progressDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: BrandColors.progressInactive },
-  progressActive: { width: 21, backgroundColor: BrandColors.primary },
-  primaryButton: {
-    height: 52,
-    borderRadius: 28,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 9,
-    backgroundColor: BrandColors.primary,
-    shadowColor: BrandColors.primary,
-    shadowOpacity: 0.24,
-    shadowOffset: { width: 0, height: 10 },
-    shadowRadius: 14,
-    elevation: 4,
-  },
-  continueButton: { minWidth: 248 },
-  fullButton: { alignSelf: 'stretch' },
-  buttonText: { color: BrandColors.surface, fontFamily: BrandFonts.regular, fontSize: 16 },
-  pressed: { opacity: 0.84, transform: [{ scale: 0.98 }] },
-});
