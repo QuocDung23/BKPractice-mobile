@@ -1,5 +1,9 @@
-import { RootNavigation } from '@/components/navigation';
+import "../../global.css";
 
-export default function RootLayout() {
+import type { ReactElement } from "react";
+
+import { RootNavigation } from "@/components/navigation";
+
+export default function RootLayout(): ReactElement {
   return <RootNavigation />;
 }

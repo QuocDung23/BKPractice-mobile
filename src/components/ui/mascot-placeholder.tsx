@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
-
-import { BrandColors, BrandFonts } from '@/lib/theme';
+import type { ReactElement } from "react";
+import { Text, View } from "react-native";
 
 type MascotPlaceholderProps = {
   title: string;
@@ -18,64 +17,34 @@ export function MascotPlaceholder({
   width,
   height,
   compact = false,
-}: MascotPlaceholderProps) {
+}: MascotPlaceholderProps): ReactElement {
   return (
-    <View style={[styles.tile, { width, height, borderRadius: compact ? 28 : 42 }]}>
-      <View pointerEvents="none" style={styles.stripeContainer}>
+    <View
+      className="items-center justify-center overflow-hidden bg-surface border-signInAccent border-[1px] border-dashed px-[18px]"
+      style={{ width, height, borderRadius: compact ? 28 : 42 }}
+    >
+      <View
+        pointerEvents="none"
+        className="absolute top-0 right-0 bottom-0 left-0"
+      >
         {STRIPES.map((index) => (
-          <View key={index} style={[styles.stripe, { top: index * 28 - 220 }]} />
+          <View
+            key={index}
+            className="absolute left-[-150px] w-[500px] h-[13px] bg-learnHighlight rotate-[-45deg]"
+            style={{ top: index * 28 - 220 }}
+          />
         ))}
       </View>
-      <Text style={[styles.title, compact && styles.compactTitle]}>{title}</Text>
-      <Text style={[styles.description, compact && styles.compactDescription]}>{description}</Text>
+      <Text
+        className={`text-primary font-brand-monoMedium text-center ${compact ? "text-[8px] tracking-[0.5px]" : "text-[10px] tracking-[1.5px]"}`}
+      >
+        {title}
+      </Text>
+      <Text
+        className={`text-center ${compact ? "text-primary font-brand-monoMedium text-[8px] leading-[12px] mt-0" : "text-textSecondary font-brand-light text-[11px] leading-[20px] mt-[6px]"}`}
+      >
+        {description}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  tile: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-    backgroundColor: BrandColors.surface,
-    borderColor: '#7FBFAE',
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    paddingHorizontal: 18,
-  },
-  stripeContainer: { ...StyleSheet.absoluteFill },
-  stripe: {
-    position: 'absolute',
-    left: -150,
-    width: 500,
-    height: 13,
-    backgroundColor: '#F2FAF7',
-    transform: [{ rotate: '-45deg' }],
-  },
-  title: {
-    color: BrandColors.primary,
-    fontFamily: BrandFonts.monoMedium,
-    fontSize: 10,
-    letterSpacing: 1.5,
-    textAlign: 'center',
-  },
-  compactTitle: {
-    fontSize: 8,
-    letterSpacing: 0.5,
-  },
-  description: {
-    color: BrandColors.textSecondary,
-    fontFamily: BrandFonts.light,
-    fontSize: 11,
-    lineHeight: 20,
-    textAlign: 'center',
-    marginTop: 6,
-  },
-  compactDescription: {
-    color: BrandColors.primary,
-    fontFamily: BrandFonts.monoMedium,
-    fontSize: 8,
-    lineHeight: 12,
-    marginTop: 0,
-  },
-});
