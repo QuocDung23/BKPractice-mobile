@@ -1,56 +1,40 @@
-# Welcome to your Expo app 👋
+# BKPractice Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo and React Native app for BKPractice.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-Route files and navigator layouts live in `src/app/`; each route renders a root UI component from `src/components/<module>/`. Screen UI and styles stay with that module. This project uses [file-based routing](https://docs.expo.dev/router/introduction). See [the architecture map](./.docs/pm/architecture/README.md) for the other source folders.
-
-## Get a fresh project
-
-When you're ready, run:
+## Run locally
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Open the project in an iOS simulator, Android emulator, or web browser from the Expo CLI.
 
-### Other setup steps
+## Source layout
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Expo Router routes and navigator entries live in `src/app/`. Each route renders UI from its
+module in `src/components/`. Shared components are in `src/components/ui/`, and theme values
+are exposed through `src/lib/themes/index.ts`. See the [architecture guide](./.docs/pm/architecture/README.md) and
+[agent workflow](./.docs/agent/working-agreement.md) for the repository conventions.
 
-## Learn more
+## Styling
 
-To learn more about developing your project with Expo, look at the following resources:
+Use NativeWind/Tailwind `className` utilities for static styles. Colors and font families in
+`tailwind.config.ts` come from `Brands`, exported by `@/lib/themes`:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```tsx
+<Text className="text-primary font-brand-medium text-[15px]">BKPractice</Text>
+```
 
-## Join the community
+Use `Brands.colors` or `Brands.fonts` for native props and dynamic styles. Keep conditional
+classes as complete strings so Tailwind can discover them. NativeWind supports
+`contentContainerClassName` on ScrollView; Expo Image needs `cssInterop` as shown in
+`HomeCourseCard`. Restart Metro with `npx expo start --clear` after changing Babel or Metro config.
 
-Join our community of developers creating universal apps.
+## Checks
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx tsc --noEmit
+npm run lint
+```

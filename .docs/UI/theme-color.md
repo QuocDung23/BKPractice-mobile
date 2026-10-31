@@ -69,8 +69,8 @@ Section 3.2 lists only the distinctive or additional colors for each screen.
 
 | Screen | Notable additional colors |
 | --- | --- |
-| Assignment list | Due soon #FEF0DC; overdue #FDECEC / #D14E4E; completed #E4F5EC / #168B5B |
-| Assignment details | #FEF0DC, #B87519; progress #3D8D7A; status #168B5B, #D14E4E |
+| Assignment list | Due soon #FEF0DC; overdue #FDECEC / #D14E4E; completed #E4F5EC / #168B5B; small status labels #8A6224, #A44343, #2F7365 |
+| Assignment details | #FEF0DC, #B87519; progress #3D8D7A; status #168B5B, #D14E4E; supporting text #4A5C55 |
 
 #### Rankings, profile, and settings
 
