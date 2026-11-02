@@ -1,11 +1,13 @@
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { Brands } from "@/lib/themes";
 
-type BottomNavigationProps = { active: "Home" | "Courses" | "Quiz" };
+type BottomNavigationProps = {
+  active: "Home" | "Courses" | "Quiz" | "Ranking" | "Profile";
+};
 
 const TABS = [
   { label: "Home", ios: "house", android: "home", href: "/home" },
@@ -21,8 +23,8 @@ const TABS = [
     android: "task_alt",
     href: "/quizzes",
   },
-  { label: "Ranking", ios: "chart.bar", android: "leaderboard", href: null },
-  { label: "Profile", ios: "person", android: "person", href: null },
+  { label: "Ranking", ios: "chart.bar", android: "leaderboard", href: "/ranking" },
+  { label: "Profile", ios: "person", android: "person", href: "/profile" },
 ] as const;
 
 export function BottomNavigation({
@@ -40,11 +42,10 @@ export function BottomNavigation({
             key={tab.label}
             accessibilityRole="tab"
             accessibilityLabel={
-              tab.href ? tab.label : `${tab.label}, coming soon`
+              tab.label
             }
-            accessibilityState={{ selected, disabled: !tab.href }}
-            disabled={!tab.href}
-            onPress={() => tab.href && router.navigate(tab.href)}
+            accessibilityState={{ selected }}
+            onPress={() => router.navigate(tab.href as Href)}
             className="flex-1 items-center gap-[3px] min-h-12"
           >
             <View
