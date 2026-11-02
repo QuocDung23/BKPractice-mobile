@@ -59,6 +59,8 @@ export function RootNavigation(): ReactElement | null {
         <Stack.Screen name="quiz-result" />
         <Stack.Screen name="assignments" />
         <Stack.Screen name="assignment-detail" />
+        <Stack.Screen name="ranking" />
+        <Stack.Screen name="profile" />
       </Stack>
     </AuthSessionProvider>
   );
