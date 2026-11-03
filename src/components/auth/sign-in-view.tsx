@@ -1,26 +1,40 @@
+import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState, type ReactElement } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BrandMark, MascotPlaceholder } from "@/components/ui";
-import { useDemoSignIn } from "@/hooks/auth/use-demo-sign-in";
+import { BrandMark, InputField, MascotPlaceholder } from "@/components/ui";
+import { useMicrosoftSignIn, useSignIn } from "@/hooks/auth";
 import { Brands } from "@/lib/themes";
 
 export function SignInView(): ReactElement {
-  const [studentId, setStudentId] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const { feedback, setFeedback, submitSignIn } = useDemoSignIn();
+  const { error, isSubmitting, submitSignIn, clearError } = useSignIn();
+  const {
+    error: ssoError,
+    isSubmitting: isSsoSubmitting,
+    submitMicrosoftSignIn,
+    clearError: clearSsoError,
+  } = useMicrosoftSignIn();
+  const busy = isSubmitting || isSsoSubmitting;
+  const feedback = error ?? ssoError;
+
+  function clearFeedback(): void {
+    clearError();
+    clearSsoError();
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -58,69 +72,53 @@ export function SignInView(): ReactElement {
           </View>
 
           <View className="px-5 pt-7 gap-4">
-            <View className="gap-2">
-              <Text className="text-text font-brand-medium text-[13px]">
-                Student ID
-              </Text>
-              <View className="h-[52px] border-fieldBorder border-[1px] rounded-[28px] flex-row items-center gap-[11px] pl-[17px] pr-[10px] bg-surface">
-                <SymbolView
-                  name={{
-                    ios: "person.crop.rectangle",
-                    android: "badge",
-                    web: "badge",
-                  }}
-                  size={19}
-                  tintColor={Brands.colors.textMuted}
-                />
-                <TextInput
-                  accessibilityLabel="Student ID"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  keyboardType="number-pad"
-                  onChangeText={(value) => {
-                    setStudentId(value);
-                    setFeedback("");
-                  }}
-                  placeholder="123220145"
-                  placeholderTextColor={Brands.colors.text}
-                  className="flex-1 min-w-0 text-text font-brand-regular text-[15px] py-0"
-                  value={studentId}
-                />
-              </View>
-            </View>
+            <InputField
+              label="Student ID or email"
+              icon={{
+                ios: "person.crop.rectangle",
+                android: "badge",
+                web: "badge",
+              }}
+              iconTintColor={Brands.colors.primary}
+              borderColor={Brands.colors.primary}
+              accessibilityLabel="Student ID or email"
+              autoCapitalize="none"
+              autoComplete="username"
+              autoCorrect={false}
+              editable={!busy}
+              keyboardType="email-address"
+              onChangeText={(value) => {
+                setIdentifier(value);
+                clearFeedback();
+              }}
+              placeholder="22520000"
+              placeholderTextColor={Brands.colors.textMuted}
+              textContentType="username"
+              value={identifier}
+            />
 
-            <View className="gap-2">
-              <Text className="text-text font-brand-medium text-[13px]">
-                Password
-              </Text>
-              <View
-                className="h-[52px] border-primary border-[1px] rounded-[28px] flex-row items-center gap-[11px] pl-[17px] pr-[10px] bg-surface"
-                style={{
-                  shadowColor: Brands.colors.primary,
-                  shadowOpacity: 0.12,
-                  shadowRadius: 5,
-                  shadowOffset: { width: 0, height: 0 },
-                  elevation: 1,
-                }}
-              >
-                <SymbolView
-                  name={{ ios: "lock", android: "lock", web: "lock" }}
-                  size={19}
-                  tintColor={Brands.colors.primary}
-                />
-                <TextInput
-                  accessibilityLabel="Password"
-                  autoComplete="password"
-                  onChangeText={(value) => {
-                    setPassword(value);
-                    setFeedback("");
-                  }}
-                  placeholder="••••••••••"
-                  placeholderTextColor={Brands.colors.text}
-                  secureTextEntry={!passwordVisible}
-                  className="flex-1 min-w-0 text-text font-brand-regular text-[15px] py-0"
-                  value={password}
-                />
+            <InputField
+              label="Password"
+              icon={{ ios: "lock", android: "lock", web: "lock" }}
+              iconTintColor={Brands.colors.primary}
+              borderColor={Brands.colors.primary}
+              accessibilityLabel="Password"
+              autoComplete="current-password"
+              editable={!busy}
+              onChangeText={(value) => {
+                setPassword(value);
+                clearFeedback();
+              }}
+              onSubmitEditing={() => {
+                if (!busy) submitSignIn(identifier, password, rememberMe);
+              }}
+              placeholder="••••••••••"
+              placeholderTextColor={Brands.colors.textMuted}
+              returnKeyType="go"
+              secureTextEntry={!passwordVisible}
+              textContentType="password"
+              value={password}
+              rightElement={
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={
@@ -141,8 +139,8 @@ export function SignInView(): ReactElement {
                     tintColor={Brands.colors.textSecondary}
                   />
                 </Pressable>
-              </View>
-            </View>
+              }
+            />
 
             <View className="flex-row items-center justify-between">
               <Pressable
@@ -172,9 +170,7 @@ export function SignInView(): ReactElement {
               </Pressable>
               <Pressable
                 accessibilityRole="button"
-                onPress={() =>
-                  setFeedback("Password recovery is not connected yet.")
-                }
+                onPress={() => router.push("/forgot-password")}
                 className="min-h-11 justify-center"
               >
                 <Text className="text-primary font-brand-medium text-[14px]">
@@ -185,8 +181,10 @@ export function SignInView(): ReactElement {
 
             <Pressable
               accessibilityRole="button"
-              onPress={() => submitSignIn(studentId, password)}
-              className="h-[52px] rounded-[28px] bg-primary items-center justify-center active:opacity-[0.84] active:scale-[0.98]"
+              accessibilityState={{ disabled: busy, busy: isSubmitting }}
+              disabled={busy}
+              onPress={() => submitSignIn(identifier, password, rememberMe)}
+              className={`h-[52px] rounded-[28px] bg-primary items-center justify-center active:opacity-[0.84] active:scale-[0.98] ${busy ? "opacity-[0.72]" : ""}`}
               style={{
                 shadowColor: Brands.colors.primary,
                 shadowOpacity: 0.24,
@@ -195,17 +193,41 @@ export function SignInView(): ReactElement {
                 elevation: 4,
               }}
             >
-              <Text className="text-surface font-brand-regular text-[16px]">
-                Sign In
-              </Text>
+              {isSubmitting ? (
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator
+                    size="small"
+                    color={Brands.colors.surface}
+                  />
+                  <Text className="text-surface font-brand-regular text-[16px]">
+                    Signing in…
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-surface font-brand-regular text-[16px]">
+                  Sign In
+                </Text>
+              )}
             </Pressable>
+
             {feedback ? (
-              <Text
+              <View
                 accessibilityRole="alert"
-                className="text-hardText font-brand-regular text-[13px] leading-[18px]"
+                className="rounded-[16px] border-[1px] border-errorBorder bg-errorBackground px-3 py-[10px] flex-row items-start gap-2"
               >
-                {feedback}
-              </Text>
+                <SymbolView
+                  name={{
+                    ios: "exclamationmark.circle",
+                    android: "error",
+                    web: "error",
+                  }}
+                  size={16}
+                  tintColor={Brands.colors.error}
+                />
+                <Text className="flex-1 text-hardText font-brand-regular text-[13px] leading-[18px]">
+                  {feedback}
+                </Text>
+              </View>
             ) : null}
 
             <View className="flex-row items-center gap-3 my-[1px]">
@@ -218,23 +240,40 @@ export function SignInView(): ReactElement {
 
             <Pressable
               accessibilityRole="button"
-              onPress={() =>
-                setFeedback("University SSO is not connected yet.")
-              }
-              className="h-[52px] rounded-[28px] border-fieldBorder border-[1px] bg-surface flex-row items-center justify-center gap-[10px] active:opacity-[0.84] active:scale-[0.98]"
+              accessibilityState={{ disabled: busy, busy: isSsoSubmitting }}
+              disabled={busy}
+              onPress={() => {
+                clearFeedback();
+                submitMicrosoftSignIn();
+              }}
+              className={`h-[52px] rounded-[28px] border-fieldBorder border-[1px] bg-surface flex-row items-center justify-center gap-[10px] active:opacity-[0.84] active:scale-[0.98] ${busy ? "opacity-[0.72]" : ""}`}
             >
-              <SymbolView
-                name={{
-                  ios: "graduationcap",
-                  android: "school",
-                  web: "school",
-                }}
-                size={18}
-                tintColor={Brands.colors.primary}
-              />
-              <Text className="text-text font-brand-medium text-[15px]">
-                Continue with university SSO
-              </Text>
+              {isSsoSubmitting ? (
+                <View className="flex-row items-center gap-2">
+                  <ActivityIndicator
+                    size="small"
+                    color={Brands.colors.primary}
+                  />
+                  <Text className="text-text font-brand-medium text-[15px]">
+                    Opening Microsoft…
+                  </Text>
+                </View>
+              ) : (
+                <>
+                  <SymbolView
+                    name={{
+                      ios: "graduationcap",
+                      android: "school",
+                      web: "school",
+                    }}
+                    size={18}
+                    tintColor={Brands.colors.primary}
+                  />
+                  <Text className="text-text font-brand-medium text-[15px]">
+                    Login with Microsoft
+                  </Text>
+                </>
+              )}
             </Pressable>
           </View>
         </ScrollView>
