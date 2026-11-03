@@ -1,9 +1,9 @@
 import { router, useFocusEffect, type Href } from "expo-router";
+import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useCallback, useRef, type ReactElement } from "react";
 import {
   ActivityIndicator,
-  Image,
   Pressable,
   ScrollView,
   Text,
@@ -121,9 +121,10 @@ export function ProfileView(): ReactElement {
               {profile?.avatar ? (
                 <Image
                   accessibilityLabel="Your avatar"
-                  source={{ uri: profile.avatar }}
+                  source={profile.avatar}
                   style={{ width: "100%", height: "100%" }}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
                 />
               ) : isLoading && !profile ? (
                 <ActivityIndicator

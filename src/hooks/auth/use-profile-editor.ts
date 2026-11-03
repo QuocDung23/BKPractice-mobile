@@ -10,6 +10,7 @@ import {
   type ProfileUpdate,
 } from "@/domain/auth";
 import { profileRepository } from "@/lib/auth";
+import { writeCachedProfile } from "@/lib/profile";
 import { useAuthSession } from "@/stores/auth-session";
 
 const MAX_AVATAR_BYTES = 52_428_800;
@@ -172,7 +173,8 @@ export function useProfileEditor(profile: Profile): ProfileEditorState {
 
     setIsSaving(true);
     try {
-      await saveMyProfile(profileRepository, session, update);
+      const savedProfile = await saveMyProfile(profileRepository, session, update);
+      writeCachedProfile(savedProfile);
       return true;
     } catch (cause) {
       if (cause instanceof AuthFailure && cause.status === 401) {

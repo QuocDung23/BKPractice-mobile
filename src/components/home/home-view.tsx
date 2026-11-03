@@ -1,4 +1,5 @@
 import { Redirect, router } from "expo-router";
+import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -6,8 +7,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNavigation } from "@/components/navigation";
 import { MascotPlaceholder } from "@/components/ui";
+import { useProfile } from "@/hooks/auth";
 import { useHomeData } from "@/hooks/auth/use-home-data";
 import { useCourseData } from "@/hooks/courses";
+import { initialsOf } from "@/lib/profile";
 import { Brands } from "@/lib/themes";
 
 import { HomeCourseCard } from "./home-course-card";
@@ -34,6 +37,7 @@ const HOME_COURSES = [
 
 export function HomeView(): ReactElement {
   const session = useHomeData();
+  const { profile } = useProfile();
   const courseData = useCourseData();
   if (!session || !courseData) return <Redirect href="/sign-in" />;
 
@@ -57,10 +61,20 @@ export function HomeView(): ReactElement {
             className="absolute w-[150px] h-[150px] rounded-[75px] bg-homeHeaderAccent opacity-[0.75] right-[-40px] top-[-50px]"
           />
           <View className="flex-row items-center gap-[10px]">
-            <View className="w-[42px] h-[42px] rounded-[21px] bg-homePink border-[1px] border-surface items-center justify-center">
-              <Text className="text-avatarText font-brand-regular text-[15px]">
-                {student.initials}
-              </Text>
+            <View className="w-[42px] h-[42px] rounded-[21px] bg-homePink border-[1px] border-surface items-center justify-center overflow-hidden">
+              {profile?.avatar ? (
+                <Image
+                  accessibilityLabel="Your avatar"
+                  source={profile.avatar}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
+                />
+              ) : (
+                <Text className="text-avatarText font-brand-regular text-[15px]">
+                  {initialsOf(profile?.displayName ?? student.name)}
+                </Text>
+              )}
             </View>
             <View className="flex-1 gap-[2px]">
               <Text className="text-splashText font-brand-light text-[12px]">

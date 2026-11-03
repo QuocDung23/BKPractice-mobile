@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { AuthFailure, loadMyProfile, type Profile } from "@/domain/auth";
 import { profileRepository } from "@/lib/auth";
+import { readCachedProfile, writeCachedProfile } from "@/lib/profile";
 import { useAuthSession } from "@/stores/auth-session";
 
 type ProfileState = {
@@ -38,7 +39,9 @@ export function useProfile(): ProfileState {
 
     loadMyProfile(profileRepository, session)
       .then((profile) => {
-        if (active) setRead({ userId, key: requestKey, profile, error: null });
+        if (!active) return;
+        writeCachedProfile(profile);
+        setRead({ userId, key: requestKey, profile, error: null });
       })
       .catch((cause) => {
         if (!active) return;
@@ -49,7 +52,10 @@ export function useProfile(): ProfileState {
         setRead((current) => ({
           userId,
           key: requestKey,
-          profile: current.userId === userId ? current.profile : null,
+          profile:
+            current.userId === userId
+              ? current.profile
+              : readCachedProfile(userId),
           error:
             cause instanceof AuthFailure
               ? cause.message
@@ -63,8 +69,10 @@ export function useProfile(): ProfileState {
   }, [session, requestKey, clearSession]);
 
   const isLoading = session !== null && read.key !== requestKey;
-  const profile =
-    session && read.userId === session.user.userId ? read.profile : null;
+  const profile = session
+    ? (readCachedProfile(session.user.userId) ??
+      (read.userId === session.user.userId ? read.profile : null))
+    : null;
   const error = session && read.key === requestKey ? read.error : null;
 
   const reload = useCallback(() => setReloadKey((key) => key + 1), []);
