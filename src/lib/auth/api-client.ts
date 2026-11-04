@@ -1,3 +1,5 @@
+import { create, type AxiosResponse } from "axios";
+
 import { AuthFailure, type AuthFailureCode, type AuthTokens } from "@/domain/auth";
 
 import { apiBaseUrl } from "./config";
@@ -17,6 +19,22 @@ export type ApiRequest = {
 
 export type TokenRefresher = () => Promise<AuthTokens | null>;
 
+const httpClient = create({
+  baseURL: apiBaseUrl,
+  timeout: 15000,
+  validateStatus: () => true,
+});
+
+const failureByStatus: Record<number, { code: AuthFailureCode; message: string }> = {
+  403: { code: "forbidden", message: "You do not have access to this action." },
+  404: { code: "invalid_request", message: "That information is unavailable." },
+  409: { code: "conflict", message: "That display name is already in use." },
+  429: {
+    code: "too_many_requests",
+    message: "Too many attempts. Wait a moment and try again.",
+  },
+};
+
 let tokenRefresher: TokenRefresher | null = null;
 let refreshInFlight: Promise<AuthTokens | null> | null = null;
 
@@ -26,45 +44,47 @@ export function setTokenRefresher(refresher: TokenRefresher | null): void {
 
 async function refreshAccessToken(): Promise<AuthTokens | null> {
   if (!tokenRefresher) return null;
-  if (!refreshInFlight) {
-    refreshInFlight = tokenRefresher()
-      .catch(() => null)
-      .finally(() => {
-        refreshInFlight = null;
-      });
-  }
+  refreshInFlight ??= tokenRefresher()
+    .catch(() => null)
+    .finally(() => {
+      refreshInFlight = null;
+    });
   return refreshInFlight;
 }
 
-function messageForStatus(status: number, unauthorizedCode: AuthFailureCode): string {
+function authFailureFor(
+  status: number,
+  unauthorizedCode: AuthFailureCode,
+): AuthFailure {
   if (status === 401) {
-    return unauthorizedCode === "invalid_credentials"
-      ? "That student ID/email and password do not match."
-      : "Your session has expired. Sign in again.";
+    const message =
+      unauthorizedCode === "invalid_credentials"
+        ? "That student ID/email and password do not match."
+        : "Your session has expired. Sign in again.";
+    return new AuthFailure(unauthorizedCode, message, status);
   }
-  if (status === 403) return "You do not have access to this action.";
-  if (status === 404) return "That information is unavailable.";
-  if (status === 409) return "That display name is already in use.";
-  if (status === 429) return "Too many attempts. Wait a moment and try again.";
-  if (status >= 500) return "BKPractice is temporarily unavailable. Try again.";
-  return "Check the information and try again.";
-}
-
-function codeForStatus(status: number, unauthorizedCode: AuthFailureCode): AuthFailureCode {
-  if (status === 401) return unauthorizedCode;
-  if (status === 403) return "forbidden";
-  if (status === 409) return "conflict";
-  if (status === 429) return "too_many_requests";
-  if (status >= 500) return "unavailable";
-  return "invalid_request";
+  if (status >= 500) {
+    return new AuthFailure(
+      "unavailable",
+      "BKPractice is temporarily unavailable. Try again.",
+      status,
+    );
+  }
+  const failure = failureByStatus[status];
+  return new AuthFailure(
+    failure?.code ?? "invalid_request",
+    failure?.message ?? "Check the information and try again.",
+    status,
+  );
 }
 
 async function sendRequest(
   request: ApiRequest,
   accessToken?: string,
-): Promise<Response> {
+): Promise<AxiosResponse<unknown>> {
   try {
-    return await fetch(`${apiBaseUrl}${request.path}`, {
+    return await httpClient.request<unknown>({
+      url: request.path,
       method: request.method ?? "GET",
       headers: {
         Accept: "application/json",
@@ -72,7 +92,7 @@ async function sendRequest(
         ...(request.mobile ? { "X-Client-Type": "mobile" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
-      body: request.body ? JSON.stringify(request.body) : undefined,
+      data: request.body,
     });
   } catch {
     throw new AuthFailure(
@@ -83,31 +103,25 @@ async function sendRequest(
 }
 
 export async function requestJson<T>(request: ApiRequest): Promise<T> {
-  let accessToken = request.accessToken;
-  let response = await sendRequest(request, accessToken);
+  let response = await sendRequest(request, request.accessToken);
 
   if (
     response.status === 401 &&
-    accessToken &&
+    request.accessToken &&
     request.retryOnUnauthorized !== false
   ) {
     const tokens = await refreshAccessToken();
-    if (tokens) {
-      accessToken = tokens.accessToken;
-      response = await sendRequest(request, accessToken);
-    }
+    if (tokens) response = await sendRequest(request, tokens.accessToken);
   }
 
-  if (!response.ok) {
-    const unauthorizedCode = request.unauthorizedCode ?? "invalid_token";
-    throw new AuthFailure(
-      codeForStatus(response.status, unauthorizedCode),
-      messageForStatus(response.status, unauthorizedCode),
+  if (response.status < 200 || response.status >= 300) {
+    throw authFailureFor(
       response.status,
+      request.unauthorizedCode ?? "invalid_token",
     );
   }
 
   if (request.expectEmpty || response.status === 204) return undefined as T;
 
-  return (await response.json()) as T;
+  return response.data as T;
 }

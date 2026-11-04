@@ -19,7 +19,7 @@ lib -> domain
 
 - `domain/auth/` giữ model, interface repository và use case. Không import Expo, React, HTTP hay
   storage.
-- `lib/auth/` hiện thực các interface domain bằng fetch client, secure token storage, helper PKCE
+- `lib/auth/` hiện thực các interface domain bằng axios client, secure token storage, helper PKCE
   Microsoft và ánh xạ response. Mã chạy thật nằm ở đây.
 - `stores/auth-session.tsx` giữ state phiên dùng chung giữa các màn hình.
 - `hooks/auth/` nối UI với use case và giữ state loading, error, navigation.
@@ -56,8 +56,9 @@ Domain trả kết quả có kiểu và không bao giờ đọc HTTP thô hay st
 
 Tệp mới trong `src/lib/auth/`:
 
-- `api-client.ts` — một fetch wrapper:
+- `api-client.ts` — một axios wrapper:
   - đọc `EXPO_PUBLIC_API_BASE_URL`,
+  - đặt timeout 15 giây cho mọi request,
   - thêm `X-Client-Type: mobile` cho các lời gọi auth và đặt lại mật khẩu,
   - thêm `Authorization: Bearer` cho lời gọi được bảo vệ,
   - ánh xạ response không phải 2xx thành lỗi có kiểu,
@@ -161,7 +162,7 @@ danh tin cậy.
 
 - Unit-test use case domain với repository giả: đăng nhập thành công/thất bại, phục hồi có làm mới,
   làm mới thất bại thì xoá phiên, lọc trường hồ sơ, thứ tự bước đặt lại.
-- Unit-test ánh xạ response của lib với fetch được mock cho từng endpoint.
+- Unit-test ánh xạ response của lib với HTTP client được mock cho từng endpoint.
 - Chạy `npx tsc --noEmit` và `npm run lint`.
 - Kiểm tra thủ công: đăng nhập, phục hồi, làm mới, đăng xuất, đọc/cập nhật hồ sơ, tải avatar, đặt
   lại mật khẩu.
@@ -182,8 +183,8 @@ danh tin cậy.
 
 - Browser hệ thống không set được header bắt đầu Microsoft; câu hỏi mở của đặc tả phải được giải
   quyết trước khi code luồng đó.
-- Hành vi `redirect: manual` có thể khác nhau giữa các fetch implementation; phải kiểm chứng trên
-  Expo trước khi dựa vào nó.
+- Hành vi redirect có thể khác nhau giữa các HTTP client; phải kiểm chứng trên Expo trước khi dựa
+  vào nó.
 - Refresh token xoay vòng có thể từ chối token cũ đang trên đường; ứng dụng chỉ được lưu cặp mới
   nhất.
 - Cold start của deep link từ browser vẫn phải đổi mã dùng một lần trong 60 giây.
