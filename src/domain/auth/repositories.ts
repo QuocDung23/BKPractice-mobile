@@ -16,6 +16,7 @@ export type PasswordCredentials = {
 
 export interface AuthRepository {
   signIn(credentials: PasswordCredentials): Promise<AuthTokens>;
+  startMicrosoftLogin(codeChallenge: string): Promise<string>;
   exchangeMicrosoftLogin(
     loginCode: string,
     codeVerifier: string,

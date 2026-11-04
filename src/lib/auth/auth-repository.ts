@@ -7,7 +7,7 @@ import {
   type AuthUser,
 } from "@/domain/auth";
 
-import { requestJson } from "@/lib/http";
+import { requestJson, requestRedirectLocation } from "@/lib/http";
 
 type AuthenticatedResponse = {
   userId: string;
@@ -35,7 +35,8 @@ function readTokens(response: AuthenticatedResponse): AuthTokens {
 }
 
 function readStatus(value: string): AccountStatus {
-  if (value === "LOCKED" || value === "PENDING" || value === "ACTIVE") return value;
+  if (value === "LOCKED" || value === "PENDING" || value === "ACTIVE")
+    return value;
   return "ACTIVE";
 }
 
@@ -55,10 +56,17 @@ export const httpAuthRepository: AuthRepository = {
     return readTokens(response);
   },
 
-  async exchangeMicrosoftLogin(
-    loginCode,
-    codeVerifier,
-  ): Promise<AuthTokens> {
+  async startMicrosoftLogin(codeChallenge: string): Promise<string> {
+    return requestRedirectLocation({
+      path: "/api/auth/microsoft",
+      headers: {
+        "X-Client-Type": "mobile",
+        "X-Mobile-Code-Challenge": codeChallenge,
+      },
+    });
+  },
+
+  async exchangeMicrosoftLogin(loginCode, codeVerifier): Promise<AuthTokens> {
     const response = await requestJson<AuthenticatedResponse>({
       path: "/api/auth/microsoft/exchange",
       method: "POST",

@@ -3,9 +3,12 @@ import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 
-import { AuthFailure, signInWithMicrosoft } from "@/domain/auth";
 import {
-  apiBaseUrl,
+  AuthFailure,
+  signInWithMicrosoft,
+  startMicrosoftSignIn,
+} from "@/domain/auth";
+import {
   authRepository,
   mobileAuthRedirectUrl,
   sessionStore,
@@ -38,9 +41,12 @@ export function useMicrosoftSignIn(): MicrosoftSignInState {
     setIsSubmitting(true);
     try {
       const pkce = await createMicrosoftPkce();
-      const startUrl = `${apiBaseUrl}/api/auth/microsoft?client_type=mobile&code_challenge=${encodeURIComponent(pkce.challenge)}`;
+      const microsoftUrl = await startMicrosoftSignIn(
+        authRepository,
+        pkce.challenge,
+      );
       const result = await WebBrowser.openAuthSessionAsync(
-        startUrl,
+        microsoftUrl,
         mobileAuthRedirectUrl,
       );
       if (result.type !== "success") return;

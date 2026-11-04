@@ -1,4 +1,9 @@
-import type { AuthRepository, PasswordResetRepository, ProfileRepository, SessionStore } from "./repositories";
+import type {
+  AuthRepository,
+  PasswordResetRepository,
+  ProfileRepository,
+  SessionStore,
+} from "./repositories";
 import {
   AuthFailure,
   type AuthSession,
@@ -20,12 +25,18 @@ function isExpiredSession(error: unknown): boolean {
   return error instanceof AuthFailure && error.status === 401;
 }
 
-async function readSession(auth: AuthRepository, tokens: AuthTokens): Promise<AuthSession> {
+async function readSession(
+  auth: AuthRepository,
+  tokens: AuthTokens,
+): Promise<AuthSession> {
   const user = await auth.readCurrentUser(tokens.accessToken);
   return { user, tokens };
 }
 
-export async function restoreSession({ auth, store }: AuthDeps): Promise<AuthSession | null> {
+export async function restoreSession({
+  auth,
+  store,
+}: AuthDeps): Promise<AuthSession | null> {
   const tokens = await store.read();
   if (!tokens) return null;
 
@@ -72,6 +83,13 @@ export async function signIn(
   return readSession(auth, tokens);
 }
 
+export async function startMicrosoftSignIn(
+  auth: AuthRepository,
+  codeChallenge: string,
+): Promise<string> {
+  return auth.startMicrosoftLogin(codeChallenge);
+}
+
 export async function signInWithMicrosoft(
   { auth, store }: AuthDeps,
   loginCode: string,
@@ -82,7 +100,10 @@ export async function signInWithMicrosoft(
   return readSession(auth, tokens);
 }
 
-export async function signOut({ auth, store }: AuthDeps, session: AuthSession): Promise<void> {
+export async function signOut(
+  { auth, store }: AuthDeps,
+  session: AuthSession,
+): Promise<void> {
   try {
     await auth.signOut(session.tokens.accessToken, session.tokens.refreshToken);
   } finally {
@@ -111,7 +132,11 @@ export async function requestAvatarUpload(
   contentType: string,
   size: number,
 ): Promise<AvatarUploadIntent> {
-  return profiles.createAvatarUploadIntent(session.tokens.accessToken, contentType, size);
+  return profiles.createAvatarUploadIntent(
+    session.tokens.accessToken,
+    contentType,
+    size,
+  );
 }
 
 export async function uploadAvatar(

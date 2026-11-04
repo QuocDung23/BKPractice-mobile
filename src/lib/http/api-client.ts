@@ -1,6 +1,11 @@
 import { create, type AxiosResponse } from "axios";
+import { fetch as fetchWithoutRedirect } from "expo/fetch";
 
-import { AuthFailure, type AuthFailureCode, type AuthTokens } from "@/domain/auth";
+import {
+  AuthFailure,
+  type AuthFailureCode,
+  type AuthTokens,
+} from "@/domain/auth";
 
 import { apiBaseUrl } from "./config";
 import { apiFailureFor } from "./failure";
@@ -16,6 +21,11 @@ export type ApiRequest = {
   expectEmpty?: boolean;
   unauthorizedCode?: AuthFailureCode;
   retryOnUnauthorized?: boolean;
+};
+
+export type RedirectRequest = {
+  path: string;
+  headers: Record<string, string>;
 };
 
 export type TokenRefresher = () => Promise<AuthTokens | null>;
@@ -65,6 +75,38 @@ async function sendRequest(
       "Cannot reach BKPractice. Check your connection.",
     );
   }
+}
+
+export async function requestRedirectLocation(
+  request: RedirectRequest,
+): Promise<string> {
+  let response: Awaited<ReturnType<typeof fetchWithoutRedirect>>;
+  try {
+    response = await fetchWithoutRedirect(`${apiBaseUrl}${request.path}`, {
+      method: "GET",
+      redirect: "manual",
+      headers: { Accept: "application/json", ...request.headers },
+    });
+  } catch {
+    throw new AuthFailure(
+      "network",
+      "Cannot reach BKPractice. Check your connection.",
+    );
+  }
+
+  if (response.status < 300 || response.status >= 400) {
+    throw apiFailureFor(response.status, "invalid_request");
+  }
+
+  const location = response.headers.get("location");
+  if (!location) {
+    throw new AuthFailure(
+      "invalid_request",
+      "Microsoft sign-in did not start. Try again.",
+      response.status,
+    );
+  }
+  return location;
 }
 
 export async function requestJson<T>(request: ApiRequest): Promise<T> {

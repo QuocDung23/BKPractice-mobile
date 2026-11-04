@@ -30,6 +30,7 @@ export {
   signIn,
   signInWithMicrosoft,
   signOut,
+  startMicrosoftSignIn,
   uploadAvatar,
   verifyPasswordResetOtp,
 } from "./use-cases";
