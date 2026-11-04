@@ -7,7 +7,7 @@ import {
   type AuthUser,
 } from "@/domain/auth";
 
-import { requestJson } from "./api-client";
+import { requestJson } from "@/lib/http";
 
 type AuthenticatedResponse = {
   userId: string;

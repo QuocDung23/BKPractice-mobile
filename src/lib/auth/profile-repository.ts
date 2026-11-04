@@ -5,7 +5,7 @@ import {
   type ProfileRepository,
 } from "@/domain/auth";
 
-import { requestJson } from "./api-client";
+import { requestJson } from "@/lib/http";
 
 export const httpProfileRepository: ProfileRepository = {
   async readMyProfile(accessToken): Promise<Profile> {

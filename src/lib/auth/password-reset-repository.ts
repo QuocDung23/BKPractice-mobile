@@ -1,6 +1,6 @@
 import type { PasswordResetRepository, PasswordResetTicket } from "@/domain/auth";
 
-import { requestJson } from "./api-client";
+import { requestJson } from "@/lib/http";
 
 export const httpPasswordResetRepository: PasswordResetRepository = {
   async sendOtp(email): Promise<void> {

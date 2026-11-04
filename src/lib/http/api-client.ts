@@ -3,6 +3,7 @@ import { create, type AxiosResponse } from "axios";
 import { AuthFailure, type AuthFailureCode, type AuthTokens } from "@/domain/auth";
 
 import { apiBaseUrl } from "./config";
+import { apiFailureFor } from "./failure";
 
 type JsonBody = Record<string, unknown>;
 
@@ -25,16 +26,6 @@ const httpClient = create({
   validateStatus: () => true,
 });
 
-const failureByStatus: Record<number, { code: AuthFailureCode; message: string }> = {
-  403: { code: "forbidden", message: "You do not have access to this action." },
-  404: { code: "invalid_request", message: "That information is unavailable." },
-  409: { code: "conflict", message: "That display name is already in use." },
-  429: {
-    code: "too_many_requests",
-    message: "Too many attempts. Wait a moment and try again.",
-  },
-};
-
 let tokenRefresher: TokenRefresher | null = null;
 let refreshInFlight: Promise<AuthTokens | null> | null = null;
 
@@ -50,32 +41,6 @@ async function refreshAccessToken(): Promise<AuthTokens | null> {
       refreshInFlight = null;
     });
   return refreshInFlight;
-}
-
-function authFailureFor(
-  status: number,
-  unauthorizedCode: AuthFailureCode,
-): AuthFailure {
-  if (status === 401) {
-    const message =
-      unauthorizedCode === "invalid_credentials"
-        ? "That student ID/email and password do not match."
-        : "Your session has expired. Sign in again.";
-    return new AuthFailure(unauthorizedCode, message, status);
-  }
-  if (status >= 500) {
-    return new AuthFailure(
-      "unavailable",
-      "BKPractice is temporarily unavailable. Try again.",
-      status,
-    );
-  }
-  const failure = failureByStatus[status];
-  return new AuthFailure(
-    failure?.code ?? "invalid_request",
-    failure?.message ?? "Check the information and try again.",
-    status,
-  );
 }
 
 async function sendRequest(
@@ -115,7 +80,7 @@ export async function requestJson<T>(request: ApiRequest): Promise<T> {
   }
 
   if (response.status < 200 || response.status >= 300) {
-    throw authFailureFor(
+    throw apiFailureFor(
       response.status,
       request.unauthorizedCode ?? "invalid_token",
     );

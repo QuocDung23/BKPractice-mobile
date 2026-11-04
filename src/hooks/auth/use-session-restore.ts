@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 
 import { refreshSession, restoreSession } from "@/domain/auth";
-import { authRepository, sessionStore, setTokenRefresher } from "@/lib/auth";
+import { setTokenRefresher } from "@/lib/http";
+
+import { authRepository, sessionStore } from "@/lib/auth";
 import { useAuthSession } from "@/stores/auth-session";
 
 export function useSessionRestore(): void {

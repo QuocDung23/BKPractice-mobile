@@ -11,7 +11,6 @@ import { httpProfileRepository } from "./profile-repository";
 import { secureSessionStore } from "./secure-session-store";
 
 export { apiBaseUrl, mobileAuthRedirectUrl } from "./config";
-export { setTokenRefresher } from "./api-client";
 export const authRepository: AuthRepository = httpAuthRepository;
 export const profileRepository: ProfileRepository = httpProfileRepository;
 export const passwordResetRepository: PasswordResetRepository =
