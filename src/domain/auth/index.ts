@@ -20,6 +20,7 @@ export type {
   SessionStore,
 } from "./repositories";
 export {
+  changeMyPassword,
   loadMyProfile,
   refreshSession,
   requestAvatarUpload,

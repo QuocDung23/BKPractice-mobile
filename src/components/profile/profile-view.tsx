@@ -58,6 +58,13 @@ const MENU = [
     href: "/profile-edit",
   },
   {
+    ios: "lock",
+    android: "lock",
+    label: "Change password",
+    value: "",
+    href: "/change-password",
+  },
+  {
     ios: "graduationcap",
     android: "school",
     label: "Class and faculty",

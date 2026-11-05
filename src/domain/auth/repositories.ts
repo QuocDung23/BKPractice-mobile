@@ -23,6 +23,11 @@ export interface AuthRepository {
   ): Promise<AuthTokens>;
   refresh(refreshToken: string): Promise<AuthRefresh>;
   readCurrentUser(accessToken: string): Promise<AuthUser>;
+  changeMyPassword(
+    accessToken: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void>;
   signOut(accessToken: string, refreshToken: string): Promise<void>;
 }
 

@@ -15,6 +15,13 @@ export function apiFailureFor(
   unauthorizedCode: AuthFailureCode,
 ): AuthFailure {
   if (status === 401) {
+    if (unauthorizedCode === "invalid_current_password") {
+      return new AuthFailure(
+        unauthorizedCode,
+        "Your current password is incorrect.",
+        status,
+      );
+    }
     const message =
       unauthorizedCode === "invalid_credentials"
         ? "That student ID/email and password do not match."

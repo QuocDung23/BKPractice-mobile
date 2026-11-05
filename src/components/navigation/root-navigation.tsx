@@ -79,6 +79,7 @@ function AppNavigator(): ReactElement {
         <Stack.Screen name="ranking" />
         <Stack.Screen name="profile" />
         <Stack.Screen name="profile-edit" />
+        <Stack.Screen name="change-password" />
       </Stack>
       {showGate ? (
         <View

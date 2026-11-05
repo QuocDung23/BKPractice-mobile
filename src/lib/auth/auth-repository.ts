@@ -103,6 +103,22 @@ export const httpAuthRepository: AuthRepository = {
     };
   },
 
+  async changeMyPassword(
+    accessToken,
+    currentPassword,
+    newPassword,
+  ): Promise<void> {
+    await requestJson<void>({
+      path: "/api/auth/password/change",
+      method: "POST",
+      mobile: true,
+      accessToken,
+      expectEmpty: true,
+      unauthorizedCode: "invalid_current_password",
+      body: { currentPassword, newPassword },
+    });
+  },
+
   async signOut(accessToken, refreshToken): Promise<void> {
     await requestJson<void>({
       path: "/api/auth/logout",

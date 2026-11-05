@@ -1,3 +1,4 @@
+export { useChangePassword } from "./use-change-password";
 export { useHomeData } from "./use-home-data";
 export { useMicrosoftSignIn } from "./use-microsoft-sign-in";
 export { usePasswordReset } from "./use-password-reset";

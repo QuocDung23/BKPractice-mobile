@@ -111,6 +111,19 @@ export async function signOut(
   }
 }
 
+export async function changeMyPassword(
+  auth: AuthRepository,
+  session: AuthSession,
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  return auth.changeMyPassword(
+    session.tokens.accessToken,
+    currentPassword,
+    newPassword,
+  );
+}
+
 export async function loadMyProfile(
   profiles: ProfileRepository,
   session: AuthSession,

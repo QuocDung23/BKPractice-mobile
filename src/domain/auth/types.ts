@@ -53,6 +53,7 @@ export type PasswordResetTicket = {
 
 export type AuthFailureCode =
   | "invalid_credentials"
+  | "invalid_current_password"
   | "invalid_token"
   | "forbidden"
   | "conflict"
