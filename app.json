@@ -31,6 +31,13 @@
         {
           "backgroundColor": "#A3D1C6"
         }
+      ],
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow BKPractice to choose a profile photo."
+        }
       ]
     ],
     "experiments": {

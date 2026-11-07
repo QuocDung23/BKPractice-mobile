@@ -1,15 +1,15 @@
-import type { DemoSession } from '@/domain/auth/demo-session';
-import { DEMO_ASSIGNMENT_DATA } from '@/lib/assignments';
-import { DEMO_COURSES, DEMO_LESSON } from '@/lib/courses/demo-courses';
+import type { HomeData } from "@/domain/home";
+import { DEMO_ASSIGNMENT_DATA } from "@/lib/assignments";
+import { DEMO_COURSES, DEMO_LESSON } from "@/lib/courses/demo-courses";
 
-export function createDemoSession(): DemoSession {
+export function createDemoHomeData(): HomeData {
   const course = DEMO_COURSES[0];
   return {
     student: {
-      id: '123220145',
-      name: 'Anh Nguyen',
-      initials: 'AN',
-      greetingName: 'A',
+      id: "123220145",
+      name: "Anh Nguyen",
+      initials: "AN",
+      greetingName: "A",
     },
     home: {
       streakDays: 7,
@@ -28,8 +28,8 @@ export function createDemoSession(): DemoSession {
         totalProblems: DEMO_ASSIGNMENT_DATA.detail.summary.totalProblems,
         dueInDays: DEMO_ASSIGNMENT_DATA.detail.dueInDays,
       },
-      quiz: { title: 'Pointers & Memory', questions: 10, minutes: 15, basedOnLesson: 12 },
-      achievement: { title: 'Century Club', problemsSolved: 100 },
+      quiz: { title: "Pointers & Memory", questions: 10, minutes: 15, basedOnLesson: 12 },
+      achievement: { title: "Century Club", problemsSolved: 100 },
       unreadNotifications: 1,
     },
   };
