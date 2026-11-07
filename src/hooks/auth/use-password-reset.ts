@@ -6,7 +6,7 @@ import {
   sendPasswordResetOtp,
   verifyPasswordResetOtp,
 } from "@/domain/auth";
-import { passwordResetRepository, sessionStore } from "@/lib/auth";
+import { passwordResetRepository, scopeSessionStore, sessionStore } from "@/lib/auth";
 import { useAuthSession } from "@/stores/auth-session";
 
 export type PasswordResetStep = "email" | "otp" | "password" | "done";
@@ -36,7 +36,7 @@ const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 const OTP_PATTERN = /^\d{6}$/;
 
 export function usePasswordReset(): PasswordResetState {
-  const { clearSession } = useAuthSession();
+  const { clearSession, beginOperation } = useAuthSession();
   const [step, setStep] = useState<PasswordResetStep>("email");
   const [email, setEmailState] = useState("");
   const [otp, setOtpState] = useState("");
@@ -153,14 +153,20 @@ export function usePasswordReset(): PasswordResetState {
       return;
     }
     setIsSubmitting(true);
+    const isCurrent = beginOperation();
+    const store = scopeSessionStore(sessionStore, isCurrent);
     try {
       await resetPassword(passwordResetRepository, resetToken, newPassword);
-      await sessionStore.clear().catch(() => undefined);
-      clearSession();
+      if (!isCurrent()) return;
+      await store.clear();
+      if (!isCurrent()) return;
+      clearSession(null);
       setStep("done");
       setNotice("Password updated. Sign in with your new password.");
       setNewPasswordState("");
     } catch (cause) {
+      if (!isCurrent()) return;
+      if (cause instanceof AuthFailure && cause.code === "storage") clearSession(cause);
       setError(failureMessage(cause));
     } finally {
       setIsSubmitting(false);

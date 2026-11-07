@@ -11,6 +11,7 @@ import { httpProfileRepository } from "./profile-repository";
 import { secureSessionStore } from "./secure-session-store";
 
 export { apiBaseUrl, mobileAuthRedirectUrl } from "./config";
+export { scopeSessionStore } from "./scoped-session-store";
 export const authRepository: AuthRepository = httpAuthRepository;
 export const profileRepository: ProfileRepository = httpProfileRepository;
 export const passwordResetRepository: PasswordResetRepository =

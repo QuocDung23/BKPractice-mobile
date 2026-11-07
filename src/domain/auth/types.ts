@@ -52,6 +52,8 @@ export type PasswordResetTicket = {
 };
 
 export type AuthFailureCode =
+  | "mobile_access_denied"
+  | "storage"
   | "invalid_credentials"
   | "invalid_current_password"
   | "invalid_token"

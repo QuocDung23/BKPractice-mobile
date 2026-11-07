@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useState, type ReactElement } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -15,21 +15,24 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BrandMark, InputField, MascotPlaceholder } from "@/components/ui";
 import { useMicrosoftSignIn, useSignIn } from "@/hooks/auth";
 import { Brands } from "@/lib/themes";
+import { useAuthSession } from "@/stores/auth-session";
 
 export function SignInView(): ReactElement {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const { error, isSubmitting, submitSignIn, clearError } = useSignIn();
+  const { error, isSubmitting, submitSignIn, clearError, retryStorageCleanup } = useSignIn();
+  const { notice, clearNotice } = useAuthSession();
+  useEffect(() => () => clearNotice(), [clearNotice]);
   const {
     error: ssoError,
     isSubmitting: isSsoSubmitting,
     submitMicrosoftSignIn,
     clearError: clearSsoError,
   } = useMicrosoftSignIn();
-  const busy = isSubmitting || isSsoSubmitting;
-  const feedback = error ?? ssoError;
+  const busy = isSubmitting || isSsoSubmitting || notice?.code === "storage";
+  const feedback = error ?? ssoError ?? notice?.message;
 
   function clearFeedback(): void {
     clearError();
@@ -228,6 +231,20 @@ export function SignInView(): ReactElement {
                   {feedback}
                 </Text>
               </View>
+            ) : null}
+
+            {notice?.code === "storage" ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Retry clearing saved session"
+                disabled={isSubmitting}
+                onPress={() => { clearFeedback(); void retryStorageCleanup(); }}
+                className="min-h-11 items-center justify-center"
+              >
+                <Text className="text-primary font-brand-medium text-[14px]">
+                  {isSubmitting ? "Retrying…" : "Retry"}
+                </Text>
+              </Pressable>
             ) : null}
 
             <View className="flex-row items-center gap-3 my-[1px]">

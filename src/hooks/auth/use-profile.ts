@@ -46,7 +46,7 @@ export function useProfile(): ProfileState {
       .catch((cause) => {
         if (!active) return;
         if (cause instanceof AuthFailure && cause.status === 401) {
-          clearSession();
+          clearSession(undefined, session);
           return;
         }
         setRead((current) => ({

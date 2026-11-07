@@ -22,6 +22,7 @@ import { AuthSessionProvider, useAuthSession } from "@/stores/auth-session";
 SplashScreen.preventAutoHideAsync();
 
 const PUBLIC_ROUTES = new Set([
+  "",
   "index",
   "onboarding",
   "sign-in",
@@ -31,16 +32,19 @@ const PUBLIC_ROUTES = new Set([
 
 function AppNavigator(): ReactElement {
   useSessionRestore();
-  const { status } = useAuthSession();
+  const { status, notice } = useAuthSession();
   const segments = useSegments();
   const currentRoute = segments[0] ?? "";
   const isPublicRoute = PUBLIC_ROUTES.has(currentRoute);
+  const isRootRoute = !segments.length;
   const showGate =
     status === "loading" || (status === "signedOut" && !isPublicRoute);
 
   useEffect(() => {
     if (status === "loading") return;
-    if (status === "signedOut" && !isPublicRoute) {
+    if (
+      status === "signedOut" && (!isPublicRoute || (notice && isRootRoute))
+    ) {
       router.replace("/sign-in");
       return;
     }
@@ -49,7 +53,7 @@ function AppNavigator(): ReactElement {
       (currentRoute === "sign-in" || currentRoute === "onboarding")
     )
       router.replace("/home");
-  }, [status, isPublicRoute, currentRoute]);
+  }, [status, notice, isPublicRoute, isRootRoute, currentRoute]);
 
   return (
     <View className="flex-1">
@@ -64,22 +68,24 @@ function AppNavigator(): ReactElement {
         <Stack.Screen name="sign-in" />
         <Stack.Screen name="forgot-password" />
         <Stack.Screen name="auth/callback" />
-        <Stack.Screen name="home" />
-        <Stack.Screen name="courses" />
-        <Stack.Screen name="course-detail" />
-        <Stack.Screen name="lesson" />
-        <Stack.Screen name="problems" />
-        <Stack.Screen name="problem-detail" />
-        <Stack.Screen name="submission-result" />
-        <Stack.Screen name="quizzes" />
-        <Stack.Screen name="quiz-question" />
-        <Stack.Screen name="quiz-result" />
-        <Stack.Screen name="assignments" />
-        <Stack.Screen name="assignment-detail" />
-        <Stack.Screen name="ranking" />
-        <Stack.Screen name="profile" />
-        <Stack.Screen name="profile-edit" />
-        <Stack.Screen name="change-password" />
+        <Stack.Protected guard={status === "signedIn"}>
+          <Stack.Screen name="home" />
+          <Stack.Screen name="courses" />
+          <Stack.Screen name="course-detail" />
+          <Stack.Screen name="lesson" />
+          <Stack.Screen name="problems" />
+          <Stack.Screen name="problem-detail" />
+          <Stack.Screen name="submission-result" />
+          <Stack.Screen name="quizzes" />
+          <Stack.Screen name="quiz-question" />
+          <Stack.Screen name="quiz-result" />
+          <Stack.Screen name="assignments" />
+          <Stack.Screen name="assignment-detail" />
+          <Stack.Screen name="ranking" />
+          <Stack.Screen name="profile" />
+          <Stack.Screen name="profile-edit" />
+          <Stack.Screen name="change-password" />
+        </Stack.Protected>
       </Stack>
       {showGate ? (
         <View

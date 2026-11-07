@@ -1,7 +1,7 @@
 import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   AuthFailure,
@@ -12,6 +12,7 @@ import {
   authRepository,
   mobileAuthRedirectUrl,
   sessionStore,
+  scopeSessionStore,
 } from "@/lib/auth";
 import { createMicrosoftPkce } from "@/lib/auth/microsoft-pkce";
 import { useAuthSession } from "@/stores/auth-session";
@@ -31,14 +32,23 @@ function readString(query: QueryParams | null, key: string): string | null {
 }
 
 export function useMicrosoftSignIn(): MicrosoftSignInState {
-  const { setSession } = useAuthSession();
+  const { setSession, clearSession, beginOperation, clearNotice, notice } = useAuthSession();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMounted = useRef(true);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
 
   async function submitMicrosoftSignIn(): Promise<void> {
-    if (isSubmitting) return;
+    if (isSubmitting || notice?.code === "storage") return;
     setError(null);
     setIsSubmitting(true);
+    clearNotice();
+    const ownsOperation = beginOperation();
+    const isCurrent = () => isMounted.current && ownsOperation();
+    const store = scopeSessionStore(sessionStore, isCurrent);
     try {
       const pkce = await createMicrosoftPkce();
       const microsoftUrl = await startMicrosoftSignIn(
@@ -49,7 +59,7 @@ export function useMicrosoftSignIn(): MicrosoftSignInState {
         microsoftUrl,
         mobileAuthRedirectUrl,
       );
-      if (result.type !== "success") return;
+      if (!isCurrent() || result.type !== "success") return;
       const query = Linking.parse(result.url).queryParams;
       const loginCode = readString(query, "loginCode");
       if (!loginCode) {
@@ -61,13 +71,16 @@ export function useMicrosoftSignIn(): MicrosoftSignInState {
         return;
       }
       const session = await signInWithMicrosoft(
-        { auth: authRepository, store: sessionStore },
+        { auth: authRepository, store },
         loginCode,
         pkce.verifier,
       );
+      if (!isCurrent()) return;
       setSession(session);
       router.replace("/home");
     } catch (cause) {
+      if (!isCurrent()) return;
+      if (cause instanceof AuthFailure && cause.code === "storage") clearSession(cause);
       if (cause instanceof AuthFailure) {
         setError(
           cause.code === "invalid_token"

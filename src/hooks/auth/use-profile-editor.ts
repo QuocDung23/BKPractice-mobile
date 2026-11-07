@@ -125,7 +125,7 @@ export function useProfileEditor(profile: Profile): ProfileEditorState {
       setNotice("Photo ready. Save to apply it.");
     } catch (cause) {
       if (cause instanceof AuthFailure && cause.status === 401) {
-        clearSession();
+        clearSession(undefined, session);
         return;
       }
       setError(
@@ -178,7 +178,7 @@ export function useProfileEditor(profile: Profile): ProfileEditorState {
       return true;
     } catch (cause) {
       if (cause instanceof AuthFailure && cause.status === 401) {
-        clearSession();
+        clearSession(undefined, session);
         return false;
       }
       setError(

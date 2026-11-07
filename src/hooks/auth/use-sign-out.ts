@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
 
-import { signOut } from "@/domain/auth";
-import { authRepository, sessionStore } from "@/lib/auth";
+import { AuthFailure, signOut } from "@/domain/auth";
+import { authRepository, scopeSessionStore, sessionStore } from "@/lib/auth";
 import { useAuthSession } from "@/stores/auth-session";
 
 type SignOutState = {
@@ -11,21 +11,24 @@ type SignOutState = {
 };
 
 export function useSignOut(): SignOutState {
-  const { session, clearSession } = useAuthSession();
+  const { session, clearSession, beginOperation } = useAuthSession();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   async function submitSignOut(): Promise<void> {
     if (isSigningOut) return;
     setIsSigningOut(true);
+    clearSession(null);
+    router.replace("/sign-in");
+    const isCurrent = beginOperation();
+    const store = scopeSessionStore(sessionStore, isCurrent);
     try {
-      if (session) await signOut({ auth: authRepository, store: sessionStore }, session);
-      else await sessionStore.clear();
-    } catch {
-      await sessionStore.clear();
+      if (session) await signOut({ auth: authRepository, store }, session);
+      else await store.clear();
+    } catch (cause) {
+      if (isCurrent() && cause instanceof AuthFailure && cause.code === "storage")
+        clearSession(cause);
     } finally {
-      clearSession();
       setIsSigningOut(false);
-      router.replace("/sign-in");
     }
   }
 

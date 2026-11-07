@@ -18,7 +18,7 @@ type AuthenticatedResponse = {
 type CurrentUserResponse = {
   userId: string;
   studentId: string | null;
-  roles: string[];
+  roles: unknown;
   status: string;
 };
 
@@ -94,7 +94,14 @@ export const httpAuthRepository: AuthRepository = {
     const response = await requestJson<CurrentUserResponse>({
       path: "/api/auth/me",
       accessToken,
+      retryOnUnauthorized: false,
     });
+    if (
+      !response || !Array.isArray(response.roles) ||
+      !response.roles.every((role: unknown) => typeof role === "string")
+    ) throw new AuthFailure(
+      "invalid_request", "The server returned an incomplete session. Try again.",
+    );
     return {
       userId: response.userId,
       studentId: response.studentId,
