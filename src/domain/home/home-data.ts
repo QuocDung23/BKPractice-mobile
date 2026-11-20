@@ -1,4 +1,4 @@
-export type DemoSession = {
+export type HomeData = {
   student: {
     id: string;
     name: string;
@@ -40,8 +40,3 @@ export type DemoSession = {
     unreadNotifications: number;
   };
 };
-
-// shortcut: local demo credentials; replace with server authentication before production.
-export function authenticateDemoStudent(studentId: string, password: string): boolean {
-  return studentId.trim() === '123220145' && password === '123456';
-}

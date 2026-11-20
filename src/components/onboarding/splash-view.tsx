@@ -4,12 +4,19 @@ import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BrandMark, MascotPlaceholder } from "@/components/ui";
+import { useAuthSession } from "@/stores/auth-session";
 
 export function SplashView(): ReactElement {
+  const { status } = useAuthSession();
+
   useEffect(() => {
-    const timeout = setTimeout(() => router.replace("/onboarding"), 1700);
+    if (status === "loading") return;
+    const timeout = setTimeout(
+      () => router.replace(status === "signedIn" ? "/home" : "/onboarding"),
+      1700,
+    );
     return () => clearTimeout(timeout);
-  }, []);
+  }, [status]);
 
   return (
     <SafeAreaView className="flex-1 bg-splash overflow-hidden">
