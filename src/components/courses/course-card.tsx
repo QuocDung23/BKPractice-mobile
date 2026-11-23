@@ -3,109 +3,114 @@ import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import type { CourseSummary } from "@/domain/courses";
-import { Brands } from "@/lib/themes";
+import {
+  getCourseActivityStatus,
+  type CourseProgress,
+  type PublishedCourse,
+} from "@/domain/courses";
+import { COURSE_VISUALS } from "./constant";
 
-type CourseCardProps = { course: CourseSummary };
+type CourseCardProps = {
+  course: PublishedCourse;
+  progress?: CourseProgress | null;
+};
 
-const ICONS = {
-  CO1003: {
-    ios: "curlybraces",
-    android: "code",
-    background: Brands.colors.courseMint,
-    color: Brands.colors.primary,
-  },
-  CO2003: {
-    ios: "point.3.connected.trianglepath.dotted",
-    android: "account_tree",
-    background: Brands.colors.practice,
-    color: Brands.colors.homeBlueText,
-  },
-  CO2005: {
-    ios: "square.grid.2x2",
-    android: "widgets",
-    background: Brands.colors.grow,
-    color: Brands.colors.growText,
-  },
-  CO1007: {
-    ios: "function",
-    android: "function",
-    background: Brands.colors.homePink,
-    color: Brands.colors.homePinkText,
-  },
-  CO2018: {
-    ios: "desktopcomputer",
-    android: "computer",
-    background: Brands.colors.courseMint,
-    color: Brands.colors.primary,
-  },
-} as const;
-
-export function CourseCard({ course }: CourseCardProps): ReactElement {
-  const icon = ICONS[course.code as keyof typeof ICONS] ?? ICONS.CO1003;
-  const available = course.code === "CO1003";
-  const complete = course.status === "Completed";
-  const subtitle = course.starts
-    ? `Starts ${course.starts} · ${course.subject}`
-    : `${course.completedLessons} of ${course.totalLessons} lessons · ${course.subject}`;
+export function CourseCard({
+  course,
+  progress,
+}: CourseCardProps): ReactElement {
+  const visualIndex =
+    Array.from(course.id).reduce(
+      (hash, character) =>
+        (hash * 31 + character.charCodeAt(0)) % 2_147_483_647,
+      0,
+    ) % COURSE_VISUALS.length;
+  const visual = COURSE_VISUALS[visualIndex];
+  const chapterLabel = course.chapterCount === 1 ? "chapter" : "chapters";
+  const status = getCourseActivityStatus(progress ?? null);
+  const progressPercent =
+    progress && progress.total > 0
+      ? Math.floor((progress.completed / progress.total) * 100)
+      : null;
+  const statusBackground =
+    status === "Completed"
+      ? "bg-successBackground"
+      : status === "In Progress"
+        ? "bg-courseMint"
+        : "bg-resultRowBackground";
+  const statusText =
+    status === "Completed"
+      ? "text-success"
+      : status === "In Progress"
+        ? "text-successLabel"
+        : "text-textSecondary";
+  const progressLabel =
+    progressPercent !== null
+      ? `${progressPercent}% complete`
+      : progress === undefined
+        ? "Loading progress"
+        : progress === null
+          ? "Progress unavailable"
+          : "No tracked activity";
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${course.title}, ${course.status}, ${course.progressPercent}%${available ? ", open course" : ", preview only"}`}
-      accessibilityState={{ disabled: !available }}
-      disabled={!available}
-      onPress={() => router.push("/course-detail")}
-      className="bg-surface border-border border-[1px] rounded-[24px] p-4 gap-[14px]"
+      accessibilityLabel={`Open ${course.title}, ${course.chapterCount} ${chapterLabel}, ${progressLabel}`}
+      onPress={() =>
+        router.push({ pathname: "/course-detail", params: { id: course.id } })
+      }
+      className="gap-[13px] rounded-[40px] border border-border bg-surface px-4 py-6 active:opacity-[0.82]"
     >
       <View className="flex-row items-start gap-3">
         <View
-          className="w-[46px] h-[46px] rounded-[17px] items-center justify-center"
-          style={{ backgroundColor: icon.background }}
+          className="h-12 w-12 shrink-0 items-center justify-center rounded-[17px]"
+          style={{ backgroundColor: visual.background }}
         >
-          <SymbolView
-            name={{ ios: icon.ios, android: icon.android, web: icon.android }}
-            size={22}
-            tintColor={icon.color}
-          />
+          <SymbolView name={visual.symbol} size={23} tintColor={visual.tint} />
         </View>
-        <View className="flex-1 gap-[3px]">
-          <View className="flex-row items-center gap-2">
-            <Text className="text-textSecondary font-brand-mono text-[11px]">
-              {course.code}
-            </Text>
-            <View
-              className={`rounded-[8px] px-[7px] py-[3px] ${complete ? "bg-successBackground" : course.status === "Not Started" ? "bg-resultRowBackground" : "bg-courseMint"}`}
-            >
-              <Text
-                className={`font-brand-medium text-[10px] ${complete ? "text-success" : course.status === "Not Started" ? "text-textSecondary" : "text-successLabel"}`}
+        <View className="min-w-0 flex-1 gap-1">
+          <View className="min-h-[22px] flex-row items-center">
+            {progress === undefined ? (
+              <View className="h-5 w-[76px] rounded-[8px] bg-progressTrack" />
+            ) : (
+              <View
+                className={`rounded-[8px] px-[8px] py-[4px] ${statusBackground}`}
               >
-                {course.status}
-              </Text>
-            </View>
+                <Text className={`font-brand-medium text-[10px] ${statusText}`}>
+                  {status ?? "Unavailable"}
+                </Text>
+              </View>
+            )}
           </View>
           <Text
-            className="text-text font-brand-regular text-[16px] tracking-[-0.25px] leading-[21px]"
             numberOfLines={2}
+            className="text-text font-brand-medium text-[16px] leading-[21px]"
           >
             {course.title}
           </Text>
-          <Text className="text-textSecondary font-brand-light text-[12px]">
-            {subtitle}
+          <Text className="text-textSecondary font-brand-light text-[13px]">
+            {course.chapterCount} {chapterLabel}
           </Text>
         </View>
       </View>
-      <View className="flex-row items-center gap-[10px]">
-        <View className="flex-1 h-[6px] bg-progressTrack rounded-[3px] overflow-hidden">
-          <View
-            className={`h-[6px] rounded-[3px] ${complete ? "bg-success" : "bg-primary"}`}
-            style={{ width: `${course.progressPercent}%` }}
-          />
+      {progressPercent !== null ? (
+        <View className="flex-row items-center gap-[10px]">
+          <View className="h-[5px] flex-1 overflow-hidden rounded-full bg-progressTrack">
+            <View
+              className={`h-full rounded-full ${status === "Completed" ? "bg-success" : "bg-primary"}`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </View>
+          <Text className="text-textSecondary font-brand-monoMedium text-[11px]">
+            {progressPercent}%
+          </Text>
         </View>
-        <Text className="text-textSecondary font-brand-monoMedium text-[11px]">
-          {course.progressPercent}%
+      ) : (
+        <Text className="text-textMuted font-brand-light text-[11px]">
+          {progressLabel}
         </Text>
-      </View>
+      )}
     </Pressable>
   );
 }

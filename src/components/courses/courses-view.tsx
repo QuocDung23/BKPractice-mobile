@@ -1,51 +1,60 @@
-import { Redirect } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState, type ReactElement } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNavigation } from "@/components/navigation";
-import type { CourseFilter } from "@/domain/courses";
-import { useFilteredCourses } from "@/hooks/courses/use-course-data";
+import {
+  FeedbackBanner,
+  LearningPagination,
+  LearningStatus,
+} from "@/components/ui";
+import { getCourseActivityStatus } from "@/domain/courses";
+import { useCourseActivity, usePublishedCourses } from "@/hooks/courses";
 import { Brands } from "@/lib/themes";
 
+import { COURSE_FILTERS } from "./constant";
 import { CourseCard } from "./course-card";
 
-const FILTERS: readonly CourseFilter[] = ["All", "In Progress", "Completed"];
+type CourseFilter = (typeof COURSE_FILTERS)[number];
 
 export function CoursesView(): ReactElement {
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<CourseFilter>("All");
-  const result = useFilteredCourses(query, filter);
-  if (!result) return <Redirect href="/sign-in" />;
+  const [search, setSearch] = useState({ page: 1, query: "" });
+  const [activeFilter, setActiveFilter] = useState<CourseFilter>("All");
+  const { state, retry } = usePublishedCourses(
+    search.page,
+    search.query.trim(),
+  );
+  const courseItems = state.status === "success" ? state.data.items : [];
+  const activityRequest = useCourseActivity(
+    courseItems,
+    courseItems.length > 0,
+  );
+  const activity =
+    activityRequest.state.status === "success"
+      ? activityRequest.state.data
+      : null;
+  const visibleCourses =
+    activeFilter === "All"
+      ? courseItems
+      : courseItems.filter((course) => {
+          return (
+            getCourseActivityStatus(
+              activity?.progressByCourseId.get(course.id) ?? null,
+            ) === activeFilter
+          );
+        });
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
-      <View className="px-5 pt-2 pb-[18px] gap-[13px] bg-surface border-b-[1px] border-b-progressTrack">
-        <View className="flex-row items-center justify-between min-h-10">
-          <Text className="text-text font-brand-regular text-[23px] tracking-[-0.5px]">
-            Courses
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Change course filter"
-            onPress={() =>
-              setFilter(FILTERS[(FILTERS.indexOf(filter) + 1) % FILTERS.length])
-            }
-            className="w-11 h-11 items-center justify-center"
-          >
-            <SymbolView
-              name={{
-                ios: "slider.horizontal.3",
-                android: "tune",
-                web: "tune",
-              }}
-              size={21}
-              tintColor={Brands.colors.text}
-            />
-          </Pressable>
-        </View>
-        <View className="h-12 rounded-[25px] bg-resultRowBackground border-[1px] border-border flex-row items-center gap-[9px] px-[15px]">
+      <View className="border-b border-progressTrack bg-surface px-5 pb-4 gap-3">
+        <Text
+          accessibilityRole="header"
+          className="text-darkGreen font-brand-regular text-[23px]"
+        >
+          Courses
+        </Text>
+        <View className="h-[50px] flex-row items-center gap-2 rounded-full border border-border bg-resultRowBackground px-4">
           <SymbolView
             name={{ ios: "magnifyingglass", android: "search", web: "search" }}
             size={19}
@@ -53,57 +62,122 @@ export function CoursesView(): ReactElement {
           />
           <TextInput
             accessibilityLabel="Search courses"
+            maxLength={200}
             autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={setQuery}
-            placeholder="Search courses or problems"
+            onChangeText={(query) => setSearch({ page: 1, query })}
+            placeholder="Search courses"
             placeholderTextColor={Brands.colors.textMuted}
             returnKeyType="search"
-            className="flex-1 text-text font-brand-light text-[14px] py-0"
-            value={query}
+            value={search.query}
+            className="h-full min-w-0 flex-1 text-text font-brand-regular"
           />
         </View>
         <View className="flex-row items-center gap-2">
-          {FILTERS.map((item) => (
-            <Pressable
-              key={item}
-              accessibilityRole="button"
-              accessibilityState={{ selected: filter === item }}
-              onPress={() => setFilter(item)}
-              className={`min-h-11 px-[14px] rounded-[22px] border-[1px] items-center justify-center ${filter === item ? "bg-primary border-primary" : "bg-resultRowBackground border-border"}`}
-            >
-              <Text
-                className={`font-brand-regular text-[12px] ${filter === item ? "text-surface" : "text-textSecondary"}`}
+          {COURSE_FILTERS.map((filter) => {
+            const selected = activeFilter === filter;
+            return (
+              <Pressable
+                key={filter}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                onPress={() => {
+                  setActiveFilter(filter);
+                  setSearch((current) => ({ ...current, page: 1 }));
+                }}
+                className={`min-h-10 items-center justify-center rounded-2xl border px-[14px] ${selected ? "border-primary bg-primary" : "border-border bg-resultRowBackground"}`}
               >
-                {item}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  numberOfLines={1}
+                  className={`font-brand-medium text-[11px] ${selected ? "text-surface" : "text-textSecondary"}`}
+                >
+                  {filter}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="px-5 pt-[18px] pb-7 gap-3"
+        contentContainerClassName="grow px-5 py-4 gap-3"
         keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
+        keyboardDismissMode="none"
       >
-        <Text className="text-textSecondary font-brand-light text-[12px] mb-[1px]">
-          {result.total} courses enrolled
-        </Text>
-        {result.courses.length ? (
-          result.courses.map((course) => (
-            <CourseCard key={course.code} course={course} />
-          ))
+        {state.status === "success" ? (
+          <>
+
+            {activeFilter !== "All" &&
+            courseItems.length > 0 &&
+            activityRequest.state.status !== "success" ? (
+              <LearningStatus
+                state={activityRequest.state}
+                retry={activityRequest.retry}
+                empty="Loading course activity."
+                centered
+              />
+            ) : (
+              <>
+                {activity?.hasUnavailableProgress ||
+                activityRequest.state.status === "error" ? (
+                  <View className="gap-1">
+                    <FeedbackBanner
+                      tone="notice"
+                      message="Some course activity could not be loaded, so progress and filtered results may be incomplete."
+                    />
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={activityRequest.retry}
+                      hitSlop={8}
+                      className="self-start min-h-11 justify-center px-3"
+                    >
+                      <Text className="text-primary font-brand-medium text-[13px]">
+                        Retry course activity
+                      </Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+                {visibleCourses.length ? (
+                  visibleCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      progress={
+                        activityRequest.state.status === "loading"
+                          ? undefined
+                          : (activity?.progressByCourseId.get(course.id) ??
+                            null)
+                      }
+                    />
+                  ))
+                ) : (
+                  <LearningStatus
+                    state={state}
+                    retry={retry}
+                    empty={
+                      activeFilter === "All"
+                        ? "No matching courses."
+                        : "No courses match this filter on this page."
+                    }
+                    centered
+                  />
+                )}
+              </>
+            )}
+            <LearningPagination
+              {...state.data}
+              onPageChange={(page) =>
+                setSearch((current) => ({ ...current, page }))
+              }
+            />
+          </>
         ) : (
-          <View className="items-center py-10 rounded-[24px] border-[1px] border-border bg-surface gap-[5px]">
-            <Text className="text-text font-brand-medium text-[15px]">
-              No matching courses
-            </Text>
-            <Text className="text-textSecondary font-brand-light text-[13px]">
-              Try another search or filter.
-            </Text>
-          </View>
+          <LearningStatus
+            state={state}
+            retry={retry}
+            empty="Courses are unavailable."
+            centered
+          />
         )}
       </ScrollView>
       <BottomNavigation active="Courses" />

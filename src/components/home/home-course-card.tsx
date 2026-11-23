@@ -4,12 +4,13 @@ import { cssInterop } from "nativewind";
 import type { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import type { CourseSummary } from "@/domain/courses";
+import type { PublishedCourse } from "@/domain/courses";
 import { Brands } from "@/lib/themes";
 
 type HomeCourseCardProps = {
-  course: CourseSummary;
+  course: PublishedCourse;
   illustration: ImageSource;
+  prominentIllustration: boolean;
 };
 
 const CourseIllustration = cssInterop(Image, { className: "style" });
@@ -17,16 +18,13 @@ const CourseIllustration = cssInterop(Image, { className: "style" });
 export function HomeCourseCard({
   course,
   illustration,
+  prominentIllustration,
 }: HomeCourseCardProps): ReactElement {
-  const available = course.code === "CO1003";
-
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${course.title}, ${course.totalLessons} lessons${available ? ", open course" : ", preview only"}`}
-      accessibilityState={{ disabled: !available }}
-      disabled={!available}
-      onPress={() => router.push("/course-detail")}
+      accessibilityLabel={`${course.title}, ${course.chapterCount} chapters, open course`}
+      onPress={() => router.push({ pathname: "/course-detail", params: { id: course.id } })}
       className="w-[48%] h-[182px] px-3 pt-[9px] pb-3 rounded-[20px] bg-surface justify-end active:opacity-[0.84]"
       style={{
         shadowColor: Brands.colors.text,
@@ -40,7 +38,11 @@ export function HomeCourseCard({
         <CourseIllustration
           source={illustration}
           contentFit="contain"
-          className={`${course.code === "CO1003" ? "w-[122%] h-[133%] absolute left-[-11%] top-[-5%]" : "w-[100%] h-[100%]"}`}
+          className={
+            prominentIllustration
+              ? "w-[122%] h-[133%] absolute left-[-11%] top-[-5%]"
+              : "w-[100%] h-[100%]"
+          }
           accessible={false}
         />
       </View>
@@ -51,7 +53,7 @@ export function HomeCourseCard({
         {course.title}
       </Text>
       <Text className="text-textSecondary font-brand-regular text-[12px] mt-[2px]">
-        {course.totalLessons} Lessons
+        {course.chapterCount} Chapters
       </Text>
     </Pressable>
   );

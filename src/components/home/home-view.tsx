@@ -6,40 +6,36 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNavigation } from "@/components/navigation";
-import { MascotPlaceholder } from "@/components/ui";
+import { FeedbackBanner, LearningStatus, MascotPlaceholder } from "@/components/ui";
 import { useProfile } from "@/hooks/auth";
 import { useHomeData } from "@/hooks/auth/use-home-data";
-import { useCourseData } from "@/hooks/courses";
+import { usePrioritizedCourses } from "@/hooks/courses";
 import { initialsOf } from "@/lib/profile";
 import { Brands } from "@/lib/themes";
 
 import { HomeCourseCard } from "./home-course-card";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"] as const;
-const HOME_COURSES = [
-  {
-    code: "CO2005",
-    illustration: require("../../../assets/images/home/oop.png"),
-  },
-  {
-    code: "CO1003",
-    illustration: require("../../../assets/images/home/programming.png"),
-  },
-  {
-    code: "CO2003",
-    illustration: require("../../../assets/images/home/data-structures.png"),
-  },
-  {
-    code: "CO1007",
-    illustration: require("../../../assets/images/home/discrete-structures.png"),
-  },
+const COURSE_ILLUSTRATIONS = [
+  { source: require("../../../assets/images/home/oop.png"), prominent: false },
+  { source: require("../../../assets/images/home/programming.png"), prominent: true },
+  { source: require("../../../assets/images/home/data-structures.png"), prominent: false },
+  { source: require("../../../assets/images/home/discrete-structures.png"), prominent: false },
 ] as const;
+
+function getCourseIllustration(courseId: string) {
+  const stableIndex = Array.from(courseId).reduce(
+    (total, character) => total + character.charCodeAt(0),
+    0,
+  ) % COURSE_ILLUSTRATIONS.length;
+  return COURSE_ILLUSTRATIONS[stableIndex];
+}
 
 export function HomeView(): ReactElement {
   const session = useHomeData();
   const { profile } = useProfile();
-  const courseData = useCourseData();
-  if (!session || !courseData) return <Redirect href="/sign-in" />;
+  const courseRequest = usePrioritizedCourses();
+  if (!session) return <Redirect href="/sign-in" />;
 
   const { student, home } = session;
   const { weeklyProgress, course, assignment, quiz, achievement } = home;
@@ -165,19 +161,54 @@ export function HomeView(): ReactElement {
               </Text>
             </Pressable>
           </View>
+          {courseRequest.state.status === "success" &&
+          (courseRequest.state.data.isLoadingProgress ||
+            courseRequest.state.data.hasUnavailableProgress) ? (
+            <View className="gap-1">
+              <FeedbackBanner
+                tone="notice"
+                message={
+                  courseRequest.state.data.hasUnavailableProgress
+                    ? "Some course activity could not be loaded. Course order may be incomplete."
+                    : "Checking course activity…"
+                }
+              />
+              {courseRequest.state.data.hasUnavailableProgress ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={courseRequest.retry}
+                  hitSlop={8}
+                  className="self-start min-h-11 justify-center px-3"
+                >
+                  <Text className="text-primary font-brand-medium text-[13px]">
+                    Retry course activity
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
           <View className="flex-row flex-wrap justify-between gap-y-[14px]">
-            {HOME_COURSES.map(({ code, illustration }) => {
-              const featuredCourse = courseData.courses.find(
-                (item) => item.code === code,
-              );
-              return featuredCourse ? (
-                <HomeCourseCard
-                  key={code}
-                  course={featuredCourse}
-                  illustration={illustration}
+            {courseRequest.state.status === "success" ? (
+              courseRequest.state.data.items.slice(0, 4).map(({ course }) => {
+                const illustration = getCourseIllustration(course.id);
+                return (
+                  <HomeCourseCard
+                    key={course.id}
+                    course={course}
+                    illustration={illustration.source}
+                    prominentIllustration={illustration.prominent}
+                  />
+                );
+              })
+              ) : (
+              <View className="w-full">
+                <LearningStatus
+                  state={courseRequest.state}
+                  retry={courseRequest.retry}
+                  empty="No courses available."
                 />
-              ) : null;
-            })}
+              </View>
+            )}
           </View>
 
           <Text className="text-text font-brand-regular text-[17px] tracking-[-0.3px]">
