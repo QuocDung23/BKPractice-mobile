@@ -1,8 +1,8 @@
 # Kế hoạch — Khóa học
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20  
-Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập nhật sau khi chốt hợp đồng và duyệt spec; không mở cổng coding.
+Spec: [spec.md](./spec.md) — Approved. Kế hoạch đã được duyệt để triển khai; đối chiếu hợp đồng backend trong quá trình code.
 
 ## Triển khai dự kiến
 
@@ -11,6 +11,8 @@ Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập
 3. Theo kiến trúc, đặt model/interface và use case nghiệp vụ trong domain, HTTP/response mapping trong lib, trạng thái tải/lỗi trong hook, UI trong components và route mỏng trong app. Tái dùng HTTP client, session và config; không thêm dependency chưa cần.
 4. Kiểm tra response tại ranh giới mạng, xử lý lỗi và thay đổi phiên; loại bỏ demo trong luồng đã nối. Nếu contract chưa có phần cần thiết, dừng tại câu hỏi thay vì dựng API hoặc giá trị giả.
 5. Sau khi được duyệt, kiểm tra điều hướng, trạng thái, quyền và các trường hợp biên trên iOS/Android; chạy `npx tsc --noEmit`, `npm run lint`, kiểm thử logic đáng kể và ghi work note theo quy trình.
+
+Phối hợp [Chapter](../chapters/plan.md) để dùng chung dữ liệu chi tiết khóa học.
 
 ## Phụ thuộc và rủi ro
 

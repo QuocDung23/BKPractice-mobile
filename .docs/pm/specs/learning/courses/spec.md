@@ -1,11 +1,11 @@
 # Learning — Khóa học
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20
 
 ## Mục tiêu và phạm vi
 
-Danh sách khóa học đã công bố, tìm kiếm, chi tiết và các chương cùng nội dung khả dụng; tiến độ khóa học của sinh viên. Đối tượng là sinh viên đã đăng nhập; không bao gồm chức năng quản trị hay thay đổi backend.
+Danh sách khóa học đã công bố, tìm kiếm, chi tiết và các chương cùng nội dung khả dụng; tiến độ khóa học của sinh viên. Phần hiển thị và điều hướng chapter được đặc tả riêng tại [Chapters](../chapters/spec.md); Courses sở hữu dữ liệu chi tiết khóa học. Đối tượng là sinh viên đã đăng nhập; không bao gồm chức năng quản trị hay thay đổi backend.
 
 ## Yêu cầu
 
@@ -25,10 +25,10 @@ Danh sách khóa học đã công bố, tìm kiếm, chi tiết và các chươn
 - Với mạng lỗi, `403`, `404` và phiên hết hạn, trạng thái tương ứng được xử lý rõ ràng, không hiển thị thành công giả; có thể thử lại khi phù hợp.
 - Màn hình hoạt động với dữ liệu rỗng và nội dung dài trên iOS/Android; không dùng dữ liệu demo như dữ liệu API.
 
-## Câu hỏi cần chốt trước khi duyệt
+## Câu hỏi mở / rủi ro triển khai
 
 Xác nhận chapter và problem/quiz trong DTO là các mục nào có thể mở; backend chưa được xác nhận có nội dung lesson, thời khóa biểu và giảng viên như UI mẫu. Chốt cách thay/ẩn màn lesson và các trường thiếu, cùng ý nghĩa bộ lọc tiến độ và xử lý phân trang.
 
 ## Phụ thuộc
 
-[Kiến trúc](../../../architecture/README.md), [quy trình](../../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec này chưa Approved; các câu hỏi trên phải được giải quyết trước khi cho phép sửa `src/`.
+[Kiến trúc](../../../architecture/README.md), [quy trình](../../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec đã Approved; các câu hỏi trên vẫn là rủi ro cần đối chiếu với hợp đồng backend khi triển khai.

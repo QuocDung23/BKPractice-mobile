@@ -1,6 +1,6 @@
 # Learning — Quiz
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20
 
 ## Mục tiêu và phạm vi
@@ -25,10 +25,10 @@ Mở quiz được phép theo ID, bắt đầu lượt làm, tải lại lượt
 - Với mạng lỗi, `403`, `404` và phiên hết hạn, trạng thái tương ứng được xử lý rõ ràng, không hiển thị thành công giả; có thể thử lại khi phù hợp.
 - Màn hình hoạt động với dữ liệu rỗng và nội dung dài trên iOS/Android; không dùng dữ liệu demo như dữ liệu API.
 
-## Câu hỏi cần chốt trước khi duyệt
+## Câu hỏi mở / rủi ro triển khai
 
-Chưa xác định nguồn danh sách Assigned/Practice và ID quiz cho sinh viên; lịch sử attempt không phải danh sách quiz. Xác nhận DTO, thời hạn, đáp án và feedback, quyền xem lại, và XP/timer trước khi duyệt.
+Chi tiết course có thể chứa quiz theo chapter; cần xác nhận phạm vi hiển thị. Chưa xác định nguồn danh sách Assigned/Practice tổng quát cho sinh viên; lịch sử attempt không phải danh sách quiz. Xác nhận DTO, thời hạn, đáp án và feedback, quyền xem lại, và XP/timer trước khi triển khai.
 
 ## Phụ thuộc
 
-[Kiến trúc](../../../architecture/README.md), [quy trình](../../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec này chưa Approved; các câu hỏi trên phải được giải quyết trước khi cho phép sửa `src/`.
+[Kiến trúc](../../../architecture/README.md), [quy trình](../../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec đã Approved; các câu hỏi trên vẫn là rủi ro cần đối chiếu với hợp đồng backend khi triển khai.

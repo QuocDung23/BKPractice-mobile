@@ -1,8 +1,8 @@
 # Kế hoạch — Trang chủ learning
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20  
-Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập nhật sau khi chốt hợp đồng và duyệt spec; không mở cổng coding.
+Spec: [spec.md](./spec.md) — Approved. Kế hoạch đã được duyệt để triển khai; đối chiếu hợp đồng backend trong quá trình code.
 
 ## Triển khai dự kiến
 

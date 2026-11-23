@@ -1,6 +1,6 @@
 # Checklist — Bài được giao
 
-Trạng thái: Draft — chưa được duyệt để triển khai.  
+Trạng thái: Approved — đã được duyệt để triển khai.  
 Ngày: 2026-11-20
 
 - [ ] Giải quyết câu hỏi mở và xác nhận phạm vi, DTO, quyền, lỗi, gateway với backend.

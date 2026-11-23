@@ -1,8 +1,8 @@
 # Kế hoạch — Quiz
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20  
-Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập nhật sau khi chốt hợp đồng và duyệt spec; không mở cổng coding.
+Spec: [spec.md](./spec.md) — Approved. Kế hoạch đã được duyệt để triển khai; đối chiếu hợp đồng backend trong quá trình code.
 
 ## Triển khai dự kiến
 
@@ -14,4 +14,4 @@ Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập
 
 ## Phụ thuộc và rủi ro
 
-Chưa xác định nguồn danh sách Assigned/Practice và ID quiz cho sinh viên; lịch sử attempt không phải danh sách quiz. Xác nhận DTO, thời hạn, đáp án và feedback, quyền xem lại, và XP/timer trước khi duyệt. Trước khi chạm API Expo/React Native, tra tài liệu SDK đúng phiên bản theo AGENTS.md. Thay đổi không bao gồm backend.
+Chưa xác định nguồn danh sách Assigned/Practice và ID quiz cho sinh viên; lịch sử attempt không phải danh sách quiz. Xác nhận DTO, thời hạn, đáp án và feedback, quyền xem lại, và XP/timer trước khi triển khai. Trước khi chạm API Expo/React Native, tra tài liệu SDK đúng phiên bản theo AGENTS.md. Thay đổi không bao gồm backend.

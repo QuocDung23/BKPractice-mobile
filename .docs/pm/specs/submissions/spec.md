@@ -1,6 +1,6 @@
-# Learning — Chạy và nộp bài
+# Submissions — Chạy và nộp bài
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20
 
 ## Mục tiêu và phạm vi
@@ -25,10 +25,10 @@ Chạy thử, nộp mã bài lập trình và xem trạng thái/kết quả bài
 - Với mạng lỗi, `403`, `404` và phiên hết hạn, trạng thái tương ứng được xử lý rõ ràng, không hiển thị thành công giả; có thể thử lại khi phù hợp.
 - Màn hình hoạt động với dữ liệu rỗng và nội dung dài trên iOS/Android; không dùng dữ liệu demo như dữ liệu API.
 
-## Câu hỏi cần chốt trước khi duyệt
+## Câu hỏi mở / rủi ro triển khai
 
 Chốt phạm vi UI nhập mã, lựa chọn ngôn ngữ, chạy thử so với nộp, cơ chế cập nhật trạng thái, giới hạn và xử lý khi kết quả request không chắc chắn; đối chiếu DTO, quyền và gateway. Không tự động thử lại thao tác tạo khi có thể tạo bản nộp trùng.
 
 ## Phụ thuộc
 
-[Kiến trúc](../../../architecture/README.md), [quy trình](../../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec này chưa Approved; các câu hỏi trên phải được giải quyết trước khi cho phép sửa `src/`.
+[Kiến trúc](../../architecture/README.md), [quy trình](../../../agent/working-agreement.md), phiên đăng nhập hiện có và hợp đồng backend tương ứng. Spec đã Approved; các câu hỏi trên vẫn là rủi ro cần đối chiếu với hợp đồng backend khi triển khai.

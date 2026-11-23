@@ -1,8 +1,8 @@
 # Kế hoạch — Bài lập trình
 
-Trạng thái: Draft  
+Trạng thái: Approved  
 Ngày: 2026-11-20  
-Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập nhật sau khi chốt hợp đồng và duyệt spec; không mở cổng coding.
+Spec: [spec.md](./spec.md) — Approved. Kế hoạch đã được duyệt để triển khai; đối chiếu hợp đồng backend trong quá trình code.
 
 ## Triển khai dự kiến
 
@@ -14,4 +14,4 @@ Spec: [spec.md](./spec.md) — Draft. Kế hoạch là đề xuất, cần cập
 
 ## Phụ thuộc và rủi ro
 
-Chốt bộ lọc, cách kết hợp và phân trang giữa problem và progress; xác nhận trường acceptance, topic và số thứ tự UI nào có nguồn thật. Luồng chạy/nộp thuộc submissions. Trước khi chạm API Expo/React Native, tra tài liệu SDK đúng phiên bản theo AGENTS.md. Thay đổi không bao gồm backend.
+Chốt bộ lọc, cách kết hợp và phân trang giữa problem và progress; xác nhận trường acceptance, topic và số thứ tự UI nào có nguồn thật. Luồng chạy/nộp thuộc [Submissions](../../submissions/plan.md). Trước khi chạm API Expo/React Native, tra tài liệu SDK đúng phiên bản theo AGENTS.md. Thay đổi không bao gồm backend.
