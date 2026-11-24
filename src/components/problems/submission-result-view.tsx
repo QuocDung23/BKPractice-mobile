@@ -4,7 +4,7 @@ import type { ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useProblemData } from "@/hooks/problems/use-problem-data";
+import { useProblemData } from "@/hooks/problems";
 import { Brands } from "@/lib/themes";
 
 export function SubmissionResultView(): ReactElement {

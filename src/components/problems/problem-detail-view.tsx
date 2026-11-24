@@ -2,21 +2,83 @@ import { Redirect, router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
-import { useProblemData } from "@/hooks/problems/use-problem-data";
+import { LearningStatus } from "@/components/ui";
+import { usePublishedProblem } from "@/hooks/problems";
 import { Brands } from "@/lib/themes";
+import { useAuthSession } from "@/stores/auth-session";
 
-export function ProblemDetailView(): ReactElement {
-  const data = useProblemData();
-  if (!data) return <Redirect href="/sign-in" />;
+type ProblemDetailViewProps = { idOrSlug: string };
 
-  const { detail } = data;
-  const { problem } = detail;
+function formatTimeLimit(timeLimitMs: number): string {
+  return timeLimitMs % 1000 === 0
+    ? `${timeLimitMs / 1000}s`
+    : `${timeLimitMs}ms`;
+}
+
+export function ProblemDetailView({
+  idOrSlug,
+}: ProblemDetailViewProps): ReactElement {
+  const { status: sessionStatus } = useAuthSession();
+  const insets = useSafeAreaInsets();
+  const request = usePublishedProblem(idOrSlug);
+  if (sessionStatus === "signedOut") return <Redirect href="/sign-in" />;
+
+  const { state, retry } = request;
+  if (state.status !== "success") {
+    return (
+      <SafeAreaView className="flex-1 bg-surface">
+        <View className="min-h-[57px] flex-row items-center px-2 border-b-[1px] border-b-progressTrack bg-background">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back to problems"
+            onPress={() => router.back()}
+            className="w-11 h-11 items-center justify-center"
+          >
+            <SymbolView
+              name={{
+                ios: "arrow.left",
+                android: "arrow_back",
+                web: "arrow_back",
+              }}
+              size={21}
+              tintColor={Brands.colors.text}
+            />
+          </Pressable>
+          <Text className="flex-1 text-text font-brand-regular text-[15px]">
+            Problem
+          </Text>
+        </View>
+        <View className="flex-1 bg-background px-5">
+          <LearningStatus
+            state={state}
+            retry={retry}
+            empty="Problem details are unavailable."
+            centered
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const problem = state.data;
+  const difficultyColors =
+    problem.difficulty === "Easy"
+      ? { background: "bg-successBackground", text: "text-success" }
+      : problem.difficulty === "Medium"
+        ? { background: "bg-warningBackground", text: "text-warningText" }
+        : { background: "bg-hardBackground", text: "text-hardText" };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <View className="min-h-[57px] flex-row items-center px-2 border-b-[1px] border-b-progressTrack bg-surface">
+    <SafeAreaView
+      edges={["top", "left", "right"]}
+      className="flex-1 bg-background"
+    >
+      <View className="min-h-[57px] flex-row items-center px-2  bg-background">
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back to problems"
@@ -33,17 +95,16 @@ export function ProblemDetailView(): ReactElement {
             tintColor={Brands.colors.text}
           />
         </Pressable>
-        <Text
-          className="flex-1 text-text font-brand-regular text-[15px]"
-          numberOfLines={1}
-        >
+        <Text className="flex-1 text-text font-brand-regular text-[23px] tracking-[-0.5px] mt-[3px]">
           {problem.title}
         </Text>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Submission history"
-          onPress={() => router.push("/submission-result")}
-          className="w-11 h-11 items-center justify-center"
+          accessibilityHint="Submission history is not available yet."
+          accessibilityState={{ disabled: true }}
+          disabled
+          className="w-11 h-11 items-center justify-center opacity-[0.65]"
         >
           <SymbolView
             name={{
@@ -58,53 +119,53 @@ export function ProblemDetailView(): ReactElement {
       </View>
 
       <ScrollView
-        className="flex-1 bg-background"
+        className="flex-1 bg-background pt-3"
         contentContainerClassName="px-5 pt-[15px] pb-6 gap-[13px]"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
       >
-        <View className="flex-row items-center gap-2">
-          <View className="min-h-[25px] px-[10px] rounded-[13px] flex-row items-center gap-1 bg-warningBackground">
-            <Text className="text-warningText font-brand-medium text-[11px]">
+        <View className="flex-row flex-wrap items-center gap-1">
+          <View
+            className={`min-h-[25px] px-[10px] rounded-[13px] flex-row items-center gap-1 ${difficultyColors.background}`}
+          >
+            <Text
+              className={`${difficultyColors.text} font-brand-medium text-[11px]`}
+            >
               {problem.difficulty}
             </Text>
           </View>
-          <View className="min-h-[25px] px-[10px] rounded-[13px] flex-row items-center gap-1 bg-successBackground">
-            <SymbolView
-              name={{
-                ios: "checkmark.circle",
-                android: "check_circle",
-                web: "check_circle",
-              }}
-              size={13}
-              tintColor={Brands.colors.success}
-            />
-            <Text className="text-success font-brand-medium text-[11px]">
-              {problem.state}
-            </Text>
-          </View>
-          <View className="min-h-[25px] px-[10px] rounded-[13px] flex-row items-center gap-1 bg-resultRowBackground">
-            <Text className="text-textSecondary font-brand-mono text-[10px]">
-              {problem.topic}
+          <View
+            className={`min-h-[25px] px-[10px] rounded-[13px] flex-row items-center gap-1 ${problem.solved ? "bg-successBackground" : "bg-resultRowBackground"}`}
+          >
+            {problem.solved ? (
+              <SymbolView
+                name={{
+                  ios: "checkmark.circle",
+                  android: "check_circle",
+                  web: "check_circle",
+                }}
+                size={13}
+                tintColor={Brands.colors.success}
+              />
+            ) : null}
+            <Text
+              className={`${problem.solved ? "text-success" : "text-textSecondary"} font-brand-medium text-[11px]`}
+            >
+              {problem.solved ? "Accepted" : "Not solved"}
             </Text>
           </View>
         </View>
 
-        <Text className="text-text font-brand-regular text-[23px] tracking-[-0.5px] mt-[3px]">
-          {problem.number}. {problem.title}
-        </Text>
         <View className="flex-row items-center gap-[17px]">
           <Text className="text-textSecondary font-brand-mono text-[11px]">
-            {detail.timeLimit} / {detail.memoryLimit}
-          </Text>
-          <Text className="text-textSecondary font-brand-mono text-[11px]">
-            {problem.acceptancePercent}% acceptance
+            {formatTimeLimit(problem.timeLimitMs)} / {problem.memoryLimitMb}MB
           </Text>
         </View>
         <Text className="text-textSupporting font-brand-light text-[15px] leading-[22px] mt-[1px]">
-          {detail.statement}
+          {problem.statement}
         </Text>
 
-        {detail.examples.map((example, index) => (
-          <View key={index} className="gap-[7px]">
+        {problem.examples.map((example, index) => (
+          <View key={`${example.input}-${index}`} className="gap-[7px]">
             <Text className="text-text font-brand-regular text-[15px]">
               Example {index + 1}
             </Text>
@@ -119,19 +180,16 @@ export function ProblemDetailView(): ReactElement {
           </View>
         ))}
 
-        <View className="gap-[6px]">
-          <Text className="text-text font-brand-regular text-[15px]">
-            Constraints
-          </Text>
-          {detail.constraints.map((constraint) => (
-            <Text
-              key={constraint}
-              className="text-textSecondary font-brand-mono text-[11px]"
-            >
-              {constraint}
+        {problem.constraints ? (
+          <View className="gap-[6px]">
+            <Text className="text-text font-brand-regular text-[15px]">
+              Constraints
             </Text>
-          ))}
-        </View>
+            <Text className="text-textSecondary font-brand-mono text-[11px] leading-[17px]">
+              {problem.constraints}
+            </Text>
+          </View>
+        ) : null}
 
         <View className="bg-practice rounded-[20px] p-4 flex-row items-start gap-3 mt-[1px]">
           <SymbolView
@@ -144,19 +202,24 @@ export function ProblemDetailView(): ReactElement {
               Read-only on mobile
             </Text>
             <Text className="text-infoText font-brand-light text-[12px] leading-[18px]">
-              You can read the problem and check results here. Open the web
-              editor to write, run tests, and submit.
+              This screen supports reading only. Code execution and submission
+              are unavailable on mobile.
             </Text>
           </View>
         </View>
       </ScrollView>
 
-      <View className="bg-surface border-t-[1px] border-t-progressTrack flex-row gap-[10px] px-5 pt-3 pb-2">
+      <View
+        className="bg-surface border-t-[1px] border-t-progressTrack items-center pt-2"
+        style={{ paddingBottom: insets.bottom + 8 }}
+      >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="View submission result"
-          onPress={() => router.push("/submission-result")}
-          className="h-12 min-w-28 border-[1px] border-fieldBorder rounded-[16px] flex-row items-center justify-center gap-[7px]"
+          accessibilityLabel="Results unavailable"
+          accessibilityHint="Submission results are not connected yet."
+          accessibilityState={{ disabled: true }}
+          disabled
+          className="w-40 h-14 border-[1px] border-fieldBorder rounded-[21px] flex-row items-center justify-center gap-2"
         >
           <SymbolView
             name={{
@@ -170,27 +233,6 @@ export function ProblemDetailView(): ReactElement {
           <Text className="text-text font-brand-medium text-[14px]">
             Results
           </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Open on Web, unavailable"
-          accessibilityHint="A web editor link has not been provided for this demo"
-          accessibilityState={{ disabled: true }}
-          disabled
-          className="flex-1 min-h-12 bg-primary opacity-[0.65] rounded-[16px] flex-row items-center justify-center gap-[7px]"
-        >
-          <Text className="text-surface font-brand-regular text-[14px]">
-            Open on Web
-          </Text>
-          <SymbolView
-            name={{
-              ios: "arrow.up.right.square",
-              android: "open_in_new",
-              web: "open_in_new",
-            }}
-            size={17}
-            tintColor={Brands.colors.surface}
-          />
         </Pressable>
       </View>
     </SafeAreaView>

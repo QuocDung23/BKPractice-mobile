@@ -1,6 +1,7 @@
+import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import type { CourseChapterProblem } from "@/domain/courses";
 import type { ProblemFilter } from "@/domain/problems";
@@ -36,8 +37,17 @@ export function ProblemList({
   return (
     <View className="gap-3">
       {filteredProblems.map((problem) => (
-        <View
+        <Pressable
           key={problem.id}
+          accessibilityRole="button"
+          accessibilityLabel={`${problem.title}, ${problem.problemType}, ${problem.difficulty}`}
+          accessibilityHint="Open problem"
+          onPress={() =>
+            router.push({
+              pathname: "/problem-detail",
+              params: { idOrSlug: problem.id },
+            })
+          }
           className="min-h-[76px] flex-row items-center gap-3 rounded-[22px] border border-border bg-surface p-4"
         >
           <View className="h-12 w-12 items-center justify-center rounded-2xl bg-courseMint">
@@ -65,7 +75,7 @@ export function ProblemList({
               {problem.problemType} · {problem.difficulty}
             </Text>
           </View>
-        </View>
+        </Pressable>
       ))}
     </View>
   );

@@ -1,6 +1,34 @@
+import type { LearningPage } from "@/domain/learning";
+
 export type ProblemDifficulty = 'Easy' | 'Medium' | 'Hard';
 export type ProblemFilter = 'All' | ProblemDifficulty;
 export type ProblemState = 'Accepted' | 'In Progress' | 'Not Attempted';
+
+export type PublishedProblem = {
+  id: string;
+  slug: string;
+  title: string;
+  difficulty: ProblemDifficulty;
+  topics: readonly string[];
+  solved: boolean;
+};
+
+export type PublishedProblemDetail = PublishedProblem & {
+  statement: string;
+  examples: readonly ProblemExample[];
+  constraints: string | null;
+  timeLimitMs: number;
+  memoryLimitMb: number;
+};
+
+export type ProblemRepository = {
+  list(
+    token: string,
+    page: number,
+    filter: ProblemFilter,
+  ): Promise<LearningPage<PublishedProblem>>;
+  get(token: string, idOrSlug: string): Promise<PublishedProblemDetail>;
+};
 
 export type ProblemSummary = {
   number: number;
