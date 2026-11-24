@@ -7,15 +7,23 @@ import { ChapterCard } from "./chapter-card";
 
 type CourseChaptersViewProps = {
   chapters: readonly CourseChapter[];
+  onSelectChapter: (chapterId: string) => void;
 };
 
-export function CourseChaptersView({ chapters }: CourseChaptersViewProps): ReactElement {
+export function CourseChaptersView({
+  chapters,
+  onSelectChapter,
+}: CourseChaptersViewProps): ReactElement {
   return (
     <View className="gap-3">
       {chapters.length ? (
         <View className="gap-3">
           {chapters.map((chapter) => (
-            <ChapterCard key={chapter.id} chapter={chapter} />
+            <ChapterCard
+              key={chapter.id}
+              chapter={chapter}
+              onPress={() => onSelectChapter(chapter.id)}
+            />
           ))}
         </View>
       ) : (

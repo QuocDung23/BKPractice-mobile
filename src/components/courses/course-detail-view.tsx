@@ -1,8 +1,8 @@
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CourseChaptersView } from "@/components/chapters";
+import { ChapterDetailView, CourseChaptersView } from "@/components/chapters";
 import { LearningStatus } from "@/components/ui";
 import { useCourseActivity, usePublishedCourse } from "@/hooks/courses";
 
@@ -11,6 +11,9 @@ import { CourseDetailHeader } from "./course-detail-header";
 type CourseDetailViewProps = { id: string };
 
 export function CourseDetailView({ id }: CourseDetailViewProps): ReactElement {
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(
+    null,
+  );
   const courseRequest = usePublishedCourse(id);
   const course =
     courseRequest.state.status === "success" ? courseRequest.state.data : null;
@@ -28,14 +31,34 @@ export function CourseDetailView({ id }: CourseDetailViewProps): ReactElement {
     activityCourses,
     activityCourses.length > 0,
   );
+  const courseProgress =
+    course && progressRequest.state.status === "success"
+      ? progressRequest.state.data.progressByCourseId.get(course.id)
+      : undefined;
+  const completedQuizIds = new Set(
+    courseProgress?.completedItems
+      .filter((item) => item.type === "QUIZ")
+      .map((item) => item.itemId) ?? [],
+  );
+  const selectedChapter = course?.chapters.find(
+    (chapter) => chapter.id === selectedChapterId,
+  );
+
+  if (course && selectedChapter) {
+    return (
+      <ChapterDetailView
+        chapter={selectedChapter}
+        courseTitle={course.title}
+        completedQuizIds={completedQuizIds}
+        onBack={() => setSelectedChapterId(null)}
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 gap-3 bg-background">
-        <CourseDetailHeader
-          course={course}
-          progressRequest={progressRequest}
-        />
+        <CourseDetailHeader course={course} progressRequest={progressRequest} />
 
         {course ? (
           <ScrollView
@@ -43,7 +66,10 @@ export function CourseDetailView({ id }: CourseDetailViewProps): ReactElement {
             keyboardShouldPersistTaps="handled"
             contentContainerClassName="grow px-5 pt-3 pb-8 gap-3"
           >
-            <CourseChaptersView chapters={course.chapters} />
+            <CourseChaptersView
+              chapters={course.chapters}
+              onSelectChapter={setSelectedChapterId}
+            />
           </ScrollView>
         ) : (
           <View className="flex-1 px-5">

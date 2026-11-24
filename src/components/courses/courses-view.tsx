@@ -106,7 +106,6 @@ export function CoursesView(): ReactElement {
       >
         {state.status === "success" ? (
           <>
-
             {activeFilter !== "All" &&
             courseItems.length > 0 &&
             activityRequest.state.status !== "success" ? (

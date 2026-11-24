@@ -53,7 +53,7 @@ export function CourseDetailHeader({
       {course?.description ? (
         <Text
           numberOfLines={2}
-          className="text-textSecondary font-brand-regular text-[12px] leading-[17px]"
+          className="text-textSecondary font-brand-medium text-[12px] leading-[17px]"
         >
           {course.description}
         </Text>
