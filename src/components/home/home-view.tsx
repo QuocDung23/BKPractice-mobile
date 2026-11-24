@@ -3,9 +3,8 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNavigation } from "@/components/navigation";
+import { PrimaryTabScreen, useBottomNavigationPadding } from "@/components/navigation";
 import { FeedbackBanner, LearningStatus, MascotPlaceholder } from "@/components/ui";
 import { useProfile } from "@/hooks/auth";
 import { useHomeData } from "@/hooks/auth/use-home-data";
@@ -32,6 +31,7 @@ function getCourseIllustration(courseId: string) {
 }
 
 export function HomeView(): ReactElement {
+  const bottomPadding = useBottomNavigationPadding();
   const session = useHomeData();
   const { profile } = useProfile();
   const courseRequest = usePrioritizedCourses();
@@ -46,10 +46,10 @@ export function HomeView(): ReactElement {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <PrimaryTabScreen active="Home" className="bg-surface">
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="pb-7"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
         <View className="bg-splash rounded-bl-[48px] rounded-br-[48px] px-5 pt-2 pb-6 overflow-hidden gap-[18px]">
           <View
@@ -424,8 +424,6 @@ export function HomeView(): ReactElement {
           </View>
         </View>
       </ScrollView>
-
-      <BottomNavigation active="Home" />
-    </SafeAreaView>
+    </PrimaryTabScreen>
   );
 }

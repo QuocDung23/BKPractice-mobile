@@ -1,9 +1,8 @@
 import { SymbolView } from "expo-symbols";
 import { useState, type ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNavigation } from "@/components/navigation";
+import { PrimaryTabScreen, useBottomNavigationPadding } from "@/components/navigation";
 import { Brands } from "@/lib/themes";
 
 const FILTERS = ["My class", "Faculty", "All time"] as const;
@@ -20,10 +19,14 @@ const ROWS = [
 ] as const;
 
 export function RankingView(): ReactElement {
+  const bottomPadding = useBottomNavigationPadding();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("My class");
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <ScrollView className="flex-1 bg-background" contentContainerClassName="pb-5">
+    <PrimaryTabScreen active="Ranking" className="bg-surface">
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         <View className="bg-splash rounded-bl-[28px] rounded-br-[28px] px-3 pt-2 pb-4 overflow-hidden">
           <View pointerEvents="none" className="absolute w-20 h-20 rounded-full bg-homeHeaderAccent opacity-70 left-[-17px] top-[-28px]" />
           <View className="flex-row items-center justify-between h-8">
@@ -74,7 +77,6 @@ export function RankingView(): ReactElement {
           ))}
         </View>
       </ScrollView>
-      <BottomNavigation active="Ranking" />
-    </SafeAreaView>
+    </PrimaryTabScreen>
   );
 }

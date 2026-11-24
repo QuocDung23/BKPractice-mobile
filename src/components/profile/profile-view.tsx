@@ -9,9 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNavigation } from "@/components/navigation";
+import { PrimaryTabScreen, useBottomNavigationPadding } from "@/components/navigation";
 import { FeedbackBanner } from "@/components/ui";
 import { useProfile, useSignOut } from "@/hooks/auth";
 import { initialsOf } from "@/lib/profile";
@@ -81,6 +80,7 @@ const MENU = [
 ] as const;
 
 export function ProfileView(): ReactElement {
+  const bottomPadding = useBottomNavigationPadding();
   const { profile, isLoading, error, reload } = useProfile();
   const { session } = useAuthSession();
   const { isSigningOut, submitSignOut } = useSignOut();
@@ -97,10 +97,10 @@ export function ProfileView(): ReactElement {
   const studentId = session?.user.studentId;
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <PrimaryTabScreen active="Profile" className="bg-surface">
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="pb-6"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
         <View className="bg-learn rounded-bl-[28px] rounded-br-[28px] px-3 pt-2 pb-5 gap-2">
           <View className="h-9 flex-row items-center justify-between">
@@ -325,7 +325,6 @@ export function ProfileView(): ReactElement {
           </Pressable>
         </View>
       </ScrollView>
-      <BottomNavigation active="Profile" />
-    </SafeAreaView>
+    </PrimaryTabScreen>
   );
 }

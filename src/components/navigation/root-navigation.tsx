@@ -13,7 +13,8 @@ import { router, Stack, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, type ReactElement } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
+import { useReducedMotion } from "react-native-reanimated";
 
 import { useSessionRestore } from "@/hooks/auth";
 import { Brands } from "@/lib/themes";
@@ -32,6 +33,7 @@ const PUBLIC_ROUTES = new Set([
 
 function AppNavigator(): ReactElement {
   useSessionRestore();
+  const reduceMotion = useReducedMotion();
   const { status, notice } = useAuthSession();
   const segments = useSegments();
   const currentRoute = segments[0] ?? "";
@@ -55,6 +57,22 @@ function AppNavigator(): ReactElement {
       router.replace("/home");
   }, [status, notice, isPublicRoute, isRootRoute, currentRoute]);
 
+  function getTabOptions({ route }: { route: { params?: object } }) {
+    const { params } = route;
+    const direction = params && "tabSwipe" in params ? params.tabSwipe : undefined;
+    if (direction !== "left" && direction !== "right") {
+      return { gestureEnabled: false };
+    }
+
+    const forwardAnimation = Platform.OS === "ios" ? "simple_push" : "slide_from_right";
+    const swipeAnimation = direction === "left" ? forwardAnimation : "slide_from_left";
+    return {
+      gestureEnabled: false,
+      animation: reduceMotion ? "none" : swipeAnimation,
+      animationDuration: 280,
+    } as const;
+  }
+
   return (
     <View className="flex-1">
       <Stack
@@ -69,8 +87,8 @@ function AppNavigator(): ReactElement {
         <Stack.Screen name="forgot-password" />
         <Stack.Screen name="auth/callback" />
         <Stack.Protected guard={status === "signedIn"}>
-          <Stack.Screen name="home" />
-          <Stack.Screen name="courses" />
+          <Stack.Screen name="home" options={getTabOptions} />
+          <Stack.Screen name="courses" options={getTabOptions} />
           <Stack.Screen name="course-detail" />
           <Stack.Screen name="lesson" />
           <Stack.Screen name="problems" />
@@ -81,8 +99,8 @@ function AppNavigator(): ReactElement {
           <Stack.Screen name="quiz-result" />
           <Stack.Screen name="assignments" />
           <Stack.Screen name="assignment-detail" />
-          <Stack.Screen name="ranking" />
-          <Stack.Screen name="profile" />
+          <Stack.Screen name="ranking" options={getTabOptions} />
+          <Stack.Screen name="profile" options={getTabOptions} />
           <Stack.Screen name="profile-edit" />
           <Stack.Screen name="change-password" />
         </Stack.Protected>

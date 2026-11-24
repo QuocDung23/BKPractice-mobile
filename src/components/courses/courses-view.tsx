@@ -1,9 +1,8 @@
 import { SymbolView } from "expo-symbols";
 import { useState, type ReactElement } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNavigation } from "@/components/navigation";
+import { PrimaryTabScreen, useBottomNavigationPadding } from "@/components/navigation";
 import {
   FeedbackBanner,
   LearningPagination,
@@ -19,6 +18,7 @@ import { CourseCard } from "./course-card";
 type CourseFilter = (typeof COURSE_FILTERS)[number];
 
 export function CoursesView(): ReactElement {
+  const bottomPadding = useBottomNavigationPadding();
   const [search, setSearch] = useState({ page: 1, query: "" });
   const [activeFilter, setActiveFilter] = useState<CourseFilter>("All");
   const { state, retry } = usePublishedCourses(
@@ -46,7 +46,7 @@ export function CoursesView(): ReactElement {
         });
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <PrimaryTabScreen active="Courses" className="bg-background">
       <View className=" px-5 pb-4 gap-3">
         <Text
           accessibilityRole="header"
@@ -100,7 +100,8 @@ export function CoursesView(): ReactElement {
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="grow px-5 py-4 gap-3"
+        contentContainerClassName="grow px-5 pt-4 gap-3"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="none"
       >
@@ -179,7 +180,6 @@ export function CoursesView(): ReactElement {
           />
         )}
       </ScrollView>
-      <BottomNavigation active="Courses" />
-    </SafeAreaView>
+    </PrimaryTabScreen>
   );
 }

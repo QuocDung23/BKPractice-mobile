@@ -4,7 +4,7 @@ import { useState, type ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNavigation } from "@/components/navigation";
+import { BottomNavigation, useBottomNavigationPadding } from "@/components/navigation";
 import type { QuizTab } from "@/domain/quiz";
 import { useQuizData } from "@/hooks/quiz";
 import { Brands } from "@/lib/themes";
@@ -14,12 +14,13 @@ import { QuizListCard } from "./quiz-list-card";
 const TABS: readonly QuizTab[] = ["Assigned", "Practice", "Completed"];
 
 export function QuizListView(): ReactElement {
+  const bottomPadding = useBottomNavigationPadding();
   const [activeTab, setActiveTab] = useState<QuizTab>("Assigned");
   const data = useQuizData();
   if (!data) return <Redirect href="/sign-in" />;
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeAreaView edges={["top", "left", "right"]} className="flex-1 bg-surface">
       <View className="bg-surface border-b-[1px] border-b-progressTrack px-5 pt-2">
         <View className="min-h-[50px] flex-row items-center justify-between">
           <Text className="text-text font-brand-regular text-[23px] tracking-[-0.5px]">
@@ -60,7 +61,8 @@ export function QuizListView(): ReactElement {
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="px-5 pt-4 pb-[26px] gap-3"
+        contentContainerClassName="px-5 pt-4 gap-3"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
       >
         {activeTab === "Assigned" ? (
           data.assigned.map((quiz) => (
@@ -77,7 +79,7 @@ export function QuizListView(): ReactElement {
           </View>
         )}
       </ScrollView>
-      <BottomNavigation active="Quiz" />
+      <BottomNavigation />
     </SafeAreaView>
   );
 }
