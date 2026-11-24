@@ -1,4 +1,5 @@
 export type {
+  InProgressQuiz,
   QuizAnswer,
   QuizAnswerFeedback,
   QuizAttempt,

@@ -31,10 +31,11 @@ import { useAuthSession } from "@/stores/auth-session";
 import { QuizExitConfirmation } from "./quiz-exit-confirmation";
 
 export function QuizQuestionView(): ReactElement {
-  const params = useLocalSearchParams<{ quizId?: string | string[] }>();
+  const params = useLocalSearchParams<{ quizId?: string | string[]; attemptId?: string | string[] }>();
   const quizId = typeof params.quizId === "string" ? params.quizId : undefined;
+  const attemptId = typeof params.attemptId === "string" ? params.attemptId : undefined;
   const { status: sessionStatus } = useAuthSession();
-  const { state, retry, answer, finish } = useQuizAttempt(quizId);
+  const { state, retry, answer, finish } = useQuizAttempt(quizId, attemptId);
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [feedbackByQuestionId, setFeedbackByQuestionId] = useState<
@@ -161,6 +162,9 @@ export function QuizQuestionView(): ReactElement {
   }
 
   const { quiz, attempt } = state.data;
+  if (attempt.status === "FINISHED") {
+    return <Redirect href={{ pathname: "/quiz-result", params: { attemptId: attempt.id } }} />;
+  }
 
   if (!question) {
     return (

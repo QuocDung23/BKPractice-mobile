@@ -1,11 +1,18 @@
-import { Redirect, router } from "expo-router";
 import { Image } from "expo-image";
+import { Redirect, router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import type { ReactElement } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import { PrimaryTabScreen, useBottomNavigationPadding } from "@/components/navigation";
-import { FeedbackBanner, LearningStatus, MascotPlaceholder } from "@/components/ui";
+import {
+  PrimaryTabScreen,
+  useBottomNavigationPadding,
+} from "@/components/navigation";
+import {
+  FeedbackBanner,
+  LearningStatus,
+  MascotPlaceholder,
+} from "@/components/ui";
 import { useProfile } from "@/hooks/auth";
 import { useHomeData } from "@/hooks/auth/use-home-data";
 import { usePrioritizedCourses } from "@/hooks/courses";
@@ -13,20 +20,31 @@ import { initialsOf } from "@/lib/profile";
 import { Brands } from "@/lib/themes";
 
 import { HomeCourseCard } from "./home-course-card";
+import { HomeInProgressQuizzes } from "./home-in-progress-quizzes";
 
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"] as const;
 const COURSE_ILLUSTRATIONS = [
   { source: require("../../../assets/images/home/oop.png"), prominent: false },
-  { source: require("../../../assets/images/home/programming.png"), prominent: true },
-  { source: require("../../../assets/images/home/data-structures.png"), prominent: false },
-  { source: require("../../../assets/images/home/discrete-structures.png"), prominent: false },
+  {
+    source: require("../../../assets/images/home/programming.png"),
+    prominent: true,
+  },
+  {
+    source: require("../../../assets/images/home/data-structures.png"),
+    prominent: false,
+  },
+  {
+    source: require("../../../assets/images/home/discrete-structures.png"),
+    prominent: false,
+  },
 ] as const;
 
 function getCourseIllustration(courseId: string) {
-  const stableIndex = Array.from(courseId).reduce(
-    (total, character) => total + character.charCodeAt(0),
-    0,
-  ) % COURSE_ILLUSTRATIONS.length;
+  const stableIndex =
+    Array.from(courseId).reduce(
+      (total, character) => total + character.charCodeAt(0),
+      0,
+    ) % COURSE_ILLUSTRATIONS.length;
   return COURSE_ILLUSTRATIONS[stableIndex];
 }
 
@@ -38,7 +56,7 @@ export function HomeView(): ReactElement {
   if (!session) return <Redirect href="/sign-in" />;
 
   const { student, home } = session;
-  const { weeklyProgress, course, assignment, quiz, achievement } = home;
+  const { weeklyProgress, assignment, quiz, achievement } = home;
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
@@ -200,7 +218,7 @@ export function HomeView(): ReactElement {
                   />
                 );
               })
-              ) : (
+            ) : (
               <View className="w-full">
                 <LearningStatus
                   state={courseRequest.state}
@@ -211,58 +229,7 @@ export function HomeView(): ReactElement {
             )}
           </View>
 
-          <Text className="text-text font-brand-regular text-[17px] tracking-[-0.3px]">
-            Continue Learning
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`Open ${course.title}`}
-            onPress={() => router.push("/course-detail")}
-            className="rounded-[22px] border-[1px] border-border bg-surface p-[17px] gap-[14px]"
-          >
-            <View className="flex-row items-start gap-3">
-              <View className="w-12 h-12 rounded-[24px] bg-courseMint items-center justify-center">
-                <SymbolView
-                  name={{ ios: "curlybraces", android: "code", web: "code" }}
-                  size={25}
-                  tintColor={Brands.colors.primary}
-                />
-              </View>
-              <View className="flex-1 gap-[2px]">
-                <Text className="text-textSecondary font-brand-mono text-[11px]">
-                  {course.code}
-                </Text>
-                <Text className="text-text font-brand-regular text-[16px] tracking-[-0.2px]">
-                  {course.title}
-                </Text>
-                <Text className="text-textSecondary font-brand-light text-[12px]">
-                  Next: Lesson {course.currentLesson} · {course.nextLesson}
-                </Text>
-              </View>
-              <SymbolView
-                name={{
-                  ios: "chevron.right",
-                  android: "chevron_right",
-                  web: "chevron_right",
-                }}
-                size={22}
-                tintColor={Brands.colors.textMuted}
-              />
-            </View>
-            <View className="flex-row items-center gap-[10px]">
-              <View className="flex-1 h-[7px] rounded-[4px] bg-progressTrack overflow-hidden">
-                <View
-                  className="h-[7px] rounded-[4px] bg-primary"
-                  style={{
-                    width: `${(course.currentLesson / course.totalLessons) * 100}%`,
-                  }}
-                />
-              </View>
-              <Text className="text-primary font-brand-monoMedium text-[11px]">
-                {course.currentLesson}/{course.totalLessons}
-              </Text>
-            </View>
-          </Pressable>
+          <HomeInProgressQuizzes />
 
           <View className="rounded-[22px] bg-practice p-4 gap-[9px] overflow-hidden">
             <View className="flex-row items-center gap-[7px]">

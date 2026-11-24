@@ -1,4 +1,7 @@
+import { AuthFailure } from "@/domain/auth";
 import type {
+  InProgressQuiz,
+  PublishedQuiz,
   QuizAnswerFeedback,
   QuizAttempt,
   QuizAttemptData,
@@ -16,6 +19,7 @@ import {
   readList,
   readObject,
   readOptionalText,
+  readPage,
   readText,
 } from "@/lib/learning";
 
@@ -197,7 +201,85 @@ function readLatestAttemptPage(
   return { attemptCount, latestAttempt: items[0] ?? null };
 }
 
+function fetchQuiz(token: string, quizId: string): Promise<PublishedQuiz> {
+  return fetchLearning(
+    token,
+    { path: `/api/quizzes/${encodeURIComponent(quizId)}` },
+    (value) => {
+      const item = readObject(value);
+      const questionCount = readCount(item.questionCount);
+      if (!questionCount) throw new Error("Expected quiz questions");
+      const id = readUuid(item.id);
+      if (id !== quizId.toLowerCase()) throw new Error("Unexpected quiz ID");
+      return {
+        id,
+        title: readText(item.title),
+        description: readOptionalText(item.description),
+        questionCount,
+      };
+    },
+  );
+}
+
 export const quizRepository: QuizRepository = {
+  async listInProgress(token): Promise<readonly InProgressQuiz[]> {
+    const limit = 100;
+    const activeAttempts = new Map<string, QuizProgressAttempt & { quizId: string }>();
+    let page = 1;
+    let total: number;
+    do {
+      const result = await fetchLearning(
+        token,
+        { path: `/api/quiz-attempts/me?page=${page}&limit=${limit}` },
+        (value) => {
+          const result = readPage(value, (item) => {
+            const quizId = readUuid(readObject(item).quizId);
+            return { ...readProgressAttempt(item, quizId), quizId };
+          }, "limit");
+          if (result.page !== page || result.pageSize !== limit || result.items.length > limit) {
+            throw new Error("Invalid quiz attempt page");
+          }
+          return result;
+        },
+      );
+      for (const attempt of result.items) {
+        if (attempt.status === "IN_PROGRESS") activeAttempts.set(attempt.id, attempt);
+      }
+      total = result.total;
+      page += 1;
+      if (result.items.length === 0) break;
+    } while ((page - 1) * limit < total);
+
+    const quizzes = await Promise.all(
+      [...activeAttempts.values()].map(async (attempt): Promise<InProgressQuiz | null> => {
+        try {
+          const { title } = await fetchQuiz(token, attempt.quizId);
+          const { id, quizId, answeredCount, totalQuestions } = attempt;
+          return { id, quizId, title, answeredCount, totalQuestions };
+        } catch (error) {
+          if (error instanceof AuthFailure && error.status === 404) return null;
+          throw error;
+        }
+      }),
+    );
+    return quizzes.filter((quiz) => quiz !== null);
+  },
+
+  async resume(token, quizId, attemptId): Promise<QuizAttemptData> {
+    const [quiz, attempt] = await Promise.all([
+      fetchQuiz(token, quizId),
+      fetchLearning(
+        token,
+        { path: `/api/quiz-attempts/${encodeURIComponent(attemptId)}` },
+        readAttempt,
+      ),
+    ]);
+    if (attempt.id !== attemptId.toLowerCase() || attempt.quizId !== quiz.id) {
+      throw new Error("Quiz attempt did not match the requested quiz");
+    }
+    return { quiz, attempt };
+  },
+
   async getProgress(token, quizId): Promise<QuizProgress> {
     const [completion, history] = await Promise.all([
       fetchLearning(
@@ -227,21 +309,7 @@ export const quizRepository: QuizRepository = {
   },
 
   async start(token, quizId): Promise<QuizAttemptData> {
-    const quiz = await fetchLearning(
-      token,
-      { path: `/api/quizzes/${encodeURIComponent(quizId)}` },
-      (value) => {
-        const item = readObject(value);
-        const questionCount = readCount(item.questionCount);
-        if (!questionCount) throw new Error("Expected quiz questions");
-        return {
-          id: readUuid(item.id),
-          title: readText(item.title),
-          description: readOptionalText(item.description),
-          questionCount,
-        };
-      },
-    );
+    const quiz = await fetchQuiz(token, quizId);
     const attempt = await fetchLearning(
       token,
       {

@@ -114,7 +114,17 @@ export type QuizProgressCollection = {
   retryableQuizIds: ReadonlySet<string>;
 };
 
+export type InProgressQuiz = {
+  id: string;
+  quizId: string;
+  title: string;
+  answeredCount: number;
+  totalQuestions: number;
+};
+
 export type QuizRepository = {
+  listInProgress(token: string): Promise<readonly InProgressQuiz[]>;
+  resume(token: string, quizId: string, attemptId: string): Promise<QuizAttemptData>;
   getProgress(token: string, quizId: string): Promise<QuizProgress>;
   start(token: string, quizId: string): Promise<QuizAttemptData>;
   answer(

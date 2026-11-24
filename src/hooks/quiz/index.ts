@@ -1,1 +1,1 @@
-export { useQuizAttempt, useQuizData, useQuizProgress, useQuizResult } from './use-quiz-data';
+export { useInProgressQuizzes, useQuizAttempt, useQuizData, useQuizProgress, useQuizResult } from './use-quiz-data';

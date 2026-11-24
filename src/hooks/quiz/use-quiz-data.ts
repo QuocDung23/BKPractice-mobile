@@ -1,6 +1,9 @@
+import { useIsFocused } from "expo-router";
+
 import { AuthFailure } from "@/domain/auth";
 import type { LearningRequestResult } from "@/domain/learning";
 import type {
+  InProgressQuiz,
   QuizAnswerFeedback,
   QuizAttempt,
   QuizAttemptData,
@@ -51,8 +54,16 @@ export function useQuizData(): QuizData | null {
   return useHomeData() ? DEMO_QUIZ_DATA : null;
 }
 
+export function useInProgressQuizzes(): LearningRequestResult<readonly InProgressQuiz[]> {
+  const focused = useIsFocused();
+  return useLearningRequest(focused ? "in-progress-quizzes" : undefined, (token) =>
+    quizRepository.listInProgress(token),
+  );
+}
+
 export function useQuizAttempt(
   quizId: string | undefined,
+  attemptId?: string,
 ): LearningRequestResult<QuizAttemptData> & {
   answer: (
     attemptId: string,
@@ -63,10 +74,12 @@ export function useQuizAttempt(
 } {
   const { session } = useAuthSession();
   const request = useLearningRequest(
-    quizId ? `quiz-attempt:${quizId}` : undefined,
+    quizId ? `quiz-attempt:${quizId}:${attemptId ?? "start"}` : undefined,
     (token) => {
       if (!quizId) throw new Error("Quiz ID is missing");
-      return quizRepository.start(token, quizId);
+      return attemptId
+        ? quizRepository.resume(token, quizId, attemptId)
+        : quizRepository.start(token, quizId);
     },
   );
 
