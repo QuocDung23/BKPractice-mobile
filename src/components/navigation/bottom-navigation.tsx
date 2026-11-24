@@ -31,6 +31,7 @@ export function useBottomNavigationPadding(): number {
 export function BottomNavigation({
   active,
 }: BottomNavigationProps): ReactElement {
+  const activeIndex = PRIMARY_TABS.findIndex((tab) => tab.label === active);
   const { bottom } = useSafeAreaInsets();
 
   return (
@@ -39,8 +40,8 @@ export function BottomNavigation({
       className="flex-row gap-1 self-center rounded-full border border-border bg-surface p-1.5"
       style={[styles.dock, { bottom: bottom + DOCK_GAP }]}
     >
-      {PRIMARY_TABS.map((tab) => {
-        const selected = tab.label === active;
+      {PRIMARY_TABS.map((tab, index) => {
+        const selected = index === activeIndex;
         return (
           <Pressable
             key={tab.label}
@@ -48,7 +49,15 @@ export function BottomNavigation({
             accessibilityLabel={tab.label}
             accessibilityState={{ selected }}
             onPress={() => {
-              if (!selected) router.navigate(tab.href);
+              if (selected) return;
+              if (activeIndex === -1) {
+                router.navigate(tab.href);
+                return;
+              }
+              router.navigate({
+                pathname: tab.href,
+                params: { tabSwipe: index > activeIndex ? "left" : "right" },
+              });
             }}
             className={`min-h-12 flex-1 items-center justify-center gap-0.5 rounded-full px-1 py-1 active:opacity-70 ${selected ? "bg-courseMint" : ""}`}
           >
