@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 
 import { AuthFailure } from "@/domain/auth";
 import type { LearningRequest, LearningRequestResult } from "@/domain/learning";
@@ -85,5 +85,9 @@ export function useLearningRequest<T>(
           completed.userId === userId
         ? completed.state
         : { status: "loading" };
-  return { state, retry: () => setRevision((current) => current + 1) };
+  const retry = useCallback(
+    () => setRevision((current) => current + 1),
+    [],
+  );
+  return { state, retry };
 }

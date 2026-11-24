@@ -4,7 +4,9 @@ import { Pressable, Text, View } from "react-native";
 import { ProblemList } from "@/components/problems";
 import { QuizList } from "@/components/quiz";
 import type { CourseChapter } from "@/domain/courses";
+import type { LearningRequestResult } from "@/domain/learning";
 import type { ProblemFilter } from "@/domain/problems";
+import type { QuizProgressCollection } from "@/domain/quiz";
 
 import type { ChapterActivityTab } from "./chapter-detail-header";
 import { DIFFICULTY_FILTERS } from "./constant";
@@ -15,7 +17,7 @@ type ChapterActivityListProps = {
   difficultyFilter: ProblemFilter;
   isDifficultyFilterOpen: boolean;
   onDifficultyFilterChange: (filter: ProblemFilter) => void;
-  completedQuizIds: ReadonlySet<string>;
+  quizProgress: LearningRequestResult<QuizProgressCollection>;
 };
 
 export function ChapterActivityList({
@@ -24,7 +26,7 @@ export function ChapterActivityList({
   difficultyFilter,
   isDifficultyFilterOpen,
   onDifficultyFilterChange,
-  completedQuizIds,
+  quizProgress,
 }: ChapterActivityListProps): ReactElement {
   return (
     <View className="gap-3">
@@ -69,7 +71,8 @@ export function ChapterActivityList({
       ) : (
         <QuizList
           quizzes={chapter.quizzes}
-          completedQuizIds={completedQuizIds}
+          progress={quizProgress.state}
+          retryProgress={quizProgress.retry}
         />
       )}
     </View>

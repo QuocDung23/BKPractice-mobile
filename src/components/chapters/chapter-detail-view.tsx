@@ -1,4 +1,5 @@
-import { useState, type ReactElement } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState, type ReactElement } from "react";
 import { ScrollView, View } from "react-native";
 import {
   SafeAreaView,
@@ -7,6 +8,7 @@ import {
 
 import type { CourseChapter } from "@/domain/courses";
 import type { ProblemFilter } from "@/domain/problems";
+import { useQuizProgress } from "@/hooks/quiz";
 
 import { ChapterActivityList } from "./chapter-activity-list";
 import {
@@ -17,14 +19,12 @@ import {
 type ChapterDetailViewProps = {
   chapter: CourseChapter;
   courseTitle: string;
-  completedQuizIds: ReadonlySet<string>;
   onBack: () => void;
 };
 
 export function ChapterDetailView({
   chapter,
   courseTitle,
-  completedQuizIds,
   onBack,
 }: ChapterDetailViewProps): ReactElement {
   const [activeTab, setActiveTab] = useState<ChapterActivityTab>("problems");
@@ -32,6 +32,16 @@ export function ChapterDetailView({
     useState<ProblemFilter>("All");
   const [isDifficultyFilterOpen, setIsDifficultyFilterOpen] = useState(false);
   const insets = useSafeAreaInsets();
+  const quizProgress = useQuizProgress(
+    chapter.quizzes.map((quiz) => quiz.id),
+    activeTab === "quizzes",
+  );
+  const retryQuizProgress = quizProgress.retry;
+  useFocusEffect(
+    useCallback(() => {
+      retryQuizProgress();
+    }, [retryQuizProgress]),
+  );
 
   return (
     <SafeAreaView
@@ -63,7 +73,7 @@ export function ChapterDetailView({
             difficultyFilter={difficultyFilter}
             isDifficultyFilterOpen={isDifficultyFilterOpen}
             onDifficultyFilterChange={setDifficultyFilter}
-            completedQuizIds={completedQuizIds}
+            quizProgress={quizProgress}
           />
         </ScrollView>
       </View>

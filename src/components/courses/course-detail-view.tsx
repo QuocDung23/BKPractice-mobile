@@ -31,15 +31,6 @@ export function CourseDetailView({ id }: CourseDetailViewProps): ReactElement {
     activityCourses,
     activityCourses.length > 0,
   );
-  const courseProgress =
-    course && progressRequest.state.status === "success"
-      ? progressRequest.state.data.progressByCourseId.get(course.id)
-      : undefined;
-  const completedQuizIds = new Set(
-    courseProgress?.completedItems
-      .filter((item) => item.type === "QUIZ")
-      .map((item) => item.itemId) ?? [],
-  );
   const selectedChapter = course?.chapters.find(
     (chapter) => chapter.id === selectedChapterId,
   );
@@ -49,7 +40,6 @@ export function CourseDetailView({ id }: CourseDetailViewProps): ReactElement {
       <ChapterDetailView
         chapter={selectedChapter}
         courseTitle={course.title}
-        completedQuizIds={completedQuizIds}
         onBack={() => setSelectedChapterId(null)}
       />
     );

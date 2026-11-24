@@ -10,14 +10,14 @@ type QuizReviewRowProps = { review: QuizReview };
 export function QuizReviewRow({ review }: QuizReviewRowProps): ReactElement {
   return (
     <View
-      className="min-h-[46px] flex-row items-center gap-[11px] px-[13px] py-2 border-b-[1px] border-b-resultRowBackground"
+      className="min-h-[56px] flex-row items-center gap-[11px] px-[14px] py-[10px] border-b-[1px] border-b-resultRowBackground"
       accessibilityLabel={`Question ${review.number}, ${review.title}, ${review.correct ? "correct" : "incorrect"}`}
     >
-      <Text className="text-textMuted font-brand-mono text-[11px] w-[23px]">
+      <Text className="text-textMuted font-brand-mono text-[12px] w-[25px]">
         {String(review.number).padStart(2, "0")}
       </Text>
       <Text
-        className="text-text font-brand-regular text-[13px] flex-1"
+        className="text-text font-brand-regular text-[14px] flex-1"
         numberOfLines={2}
       >
         {review.title}

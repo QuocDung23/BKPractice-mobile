@@ -1,1 +1,20 @@
-export type { QuizAnswer, QuizData, QuizQuestion, QuizResult, QuizReview, QuizSummary, QuizTab } from './quiz';
+export type {
+  QuizAnswer,
+  QuizAnswerFeedback,
+  QuizAttempt,
+  QuizAttemptData,
+  QuizAttemptQuestion,
+  QuizAttemptSummary,
+  QuizData,
+  QuizOption,
+  QuizProgress,
+  QuizProgressAttempt,
+  QuizProgressCollection,
+  QuizQuestion,
+  QuizRepository,
+  QuizResult,
+  QuizReview,
+  QuizSummary,
+  QuizTab,
+  PublishedQuiz,
+} from './quiz';
