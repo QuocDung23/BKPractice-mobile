@@ -7,8 +7,30 @@ export type PublishedCourse = {
   chapterCount: number;
 };
 
+export type CourseChapterProblem = {
+  id: string;
+  slug: string;
+  title: string;
+  problemType: string;
+  difficulty: string;
+};
+
+export type CourseChapterQuiz = {
+  id: string;
+  title: string;
+};
+
+export type CourseChapter = {
+  id: string;
+  title: string;
+  description: string | null;
+  problems: readonly CourseChapterProblem[];
+  quizzes: readonly CourseChapterQuiz[];
+};
+
 export type PublishedCourseDetail = Omit<PublishedCourse, "chapterCount"> & {
   description: string | null;
+  chapters: readonly CourseChapter[];
 };
 
 export type CourseProgress = {
@@ -30,7 +52,11 @@ export type CourseWithProgress = {
 };
 
 export type CourseRepository = {
-  list(token: string, page: number, query: string): Promise<LearningPage<PublishedCourse>>;
+  list(
+    token: string,
+    page: number,
+    query: string,
+  ): Promise<LearningPage<PublishedCourse>>;
   get(token: string, id: string): Promise<PublishedCourseDetail>;
   getProgress(token: string, id: string): Promise<CourseProgress>;
 };
@@ -39,7 +65,8 @@ export function getCourseActivityStatus(
   progress: CourseProgress | null,
 ): CourseActivityStatus | null {
   if (!progress) return null;
-  if (progress.completed > 0 && progress.completed < progress.total) return "In Progress";
+  if (progress.completed > 0 && progress.completed < progress.total)
+    return "In Progress";
   if (progress.completed > 0) return "Completed";
   return "Not Started";
 }
@@ -70,13 +97,15 @@ export function prioritizeCourses(
       originalOrder,
     }))
     .sort((first, second) => {
-      const priorityDifference = getCoursePriority(first) - getCoursePriority(second);
+      const priorityDifference =
+        getCoursePriority(first) - getCoursePriority(second);
       if (priorityDifference !== 0) return priorityDifference;
 
       if (getCoursePriority(first) === 1 && first.progress && second.progress) {
         const firstActivity = getLatestActivity(first.progress);
         const secondActivity = getLatestActivity(second.progress);
-        if (firstActivity !== secondActivity) return secondActivity - firstActivity;
+        if (firstActivity !== secondActivity)
+          return secondActivity - firstActivity;
       }
 
       return first.originalOrder - second.originalOrder;

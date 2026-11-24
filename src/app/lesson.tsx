@@ -1,7 +1,6 @@
-import type { ReactElement } from 'react';
-
-import { LessonView } from '@/components/courses';
+import { Redirect } from "expo-router";
+import type { ReactElement } from "react";
 
 export default function LessonRoute(): ReactElement {
-  return <LessonView />;
+  return <Redirect href="/courses" />;
 }

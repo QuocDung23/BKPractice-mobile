@@ -46,8 +46,8 @@ export function CoursesView(): ReactElement {
         });
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <View className="border-b border-progressTrack bg-surface px-5 pb-4 gap-3">
+    <SafeAreaView className="flex-1 bg-background">
+      <View className=" px-5 pb-4 gap-3">
         <Text
           accessibilityRole="header"
           className="text-darkGreen font-brand-regular text-[23px]"
